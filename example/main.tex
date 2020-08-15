@@ -1,0 +1,495 @@
+%% LyX 2.3.5-1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{bxjsarticle}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fontspec}
+\usepackage{color}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage[authoryear]{natbib}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 0},pdfborderstyle={},backref=false,colorlinks=true]
+ {hyperref}
+\hypersetup{
+ linkcolor=cyan,citecolor=cyan,urlcolor=magenta}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\providecommand\textquotedblplain{%
+  \bgroup\addfontfeatures{Mapping=}\char34\egroup}
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{equation}{section}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+% LyX 2.3.3 で動作確認
+% ifplatform を使用するために, 形式 -> 「外部プログラムの実行を許可」にチェックを入れる
+% やりたくないなら ifplatform でフォント指定分岐しているところを書き換える
+\usepackage[AutoFallBack=true]{zxjatype}
+\usepackage{ifthen}
+\usepackage{ifplatform} % 環境依存で記述を条件分岐させるために必要
+
+% document 環境内で \label 使わないと LyX が使用判定してくれず, エラーになるので以下で必ず読み込み
+\usepackage{listings}
+\usepackage{color}
+\usepackage{prettyref} 
+
+% 以下4パッケージは表のデザイン用
+\usepackage{dcolumn}
+\usepackage{multicol}
+\usepackage{boites}
+\usepackage{booktabs}
+
+
+% --- color.sty で色登録 ----- %
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{myblue}{rgb}{0,0,0.6}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mygray2}{rgb}{0.2,0.2,0.2}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+% -----
+
+% ---- zxjatype.sty でフォント指定 ---- %
+% 欧文フォントはフォントタブで指定できるが, オプション指定ができないので欧文・和文まとめてここに書く
+% ifplatform でOSごとに違うフォントを指定しているため, -shell-escape をつけてコンパイルする必要あり
+\iflinux
+  \setmainfont[Ligatures=TeX]{Palatino Linotype}
+  \setsansfont[Ligatures=TeX]{Arial}
+  \setmonofont{Ricty Diminished}
+  \setjamainfont{Noto Serif CJK JP} %和文フォント指定
+  \setjasansfont{Noto Sans CJK JP} %和文サンセリフ指定
+  \setjamonofont{Ricty Diminished} %和文等幅フォント
+\fi
+% fail-safe として *NIX になったときも Linux と同じ設定になるように
+\ifthenelse{\equal{\platformname}{*NIX}}{
+  \setmainfont[Ligatures=TeX]{Palatino Linotype}
+  \setsansfont[Ligatures=TeX]{Arial}
+  \setmonofont{Ricty Diminished}
+  \setjamainfont{Noto Serif CJK JP} %和文フォント指定
+  \setjasansfont{Noto Sans CJK JP} %和文サンセリフ指定
+  \setjamonofont{Ricty Diminished} %和文等幅フォント
+}{}
+\ifmacosx
+  \setmainfont[Ligatures=TeX]{Times} %欧文フォント族指定
+  \setsansfont[Ligatures=TeX]{Helvetica} %欧文サンセリフフォント指定
+  \setmonofont{Ricty Diminished} %欧文等幅フォント指定
+  \setjamainfont[BoldFont=Hiragino Mincho ProN W6]{Hiragino Mincho ProN W3} %和文フォント指定
+  \setjasansfont[BoldFont=Hiragino Kaku Gothic ProN W6]{Hiragino Maru Gothic ProN W4} %和文サンセリフ指定
+  \setjamonofont[BoldFont=Ricty Diminished]{Ricty Diminished} %和文等幅フォント
+\fi
+\ifwindows
+  \setmainfont[Ligatures=TeX]{Palatino Linotype}
+  \setsansfont[Ligatures=TeX]{Arial}
+  \setmonofont{Ricty Diminished}
+  \setjamainfont[BoldFont=Noto Sans CJK JP]{Noto Serif CJK JP} %和文フォント指定
+  \setjasansfont[BoldFont=Noto Sans CJK JP]{Noto Sans CJK JP} %和文サンセリフ指定
+  \setjamonofont[BoldFont=Ricty Diminished]{Ricty Diminished} %和文等幅フォント
+\fi
+% document 内では \textranwen{ dararara } で任意の文を欧文として処理できる
+% -----
+
+
+% --- 数式記号を新たに定義 ---- %
+% amsmath 等は LyX が読み込むべきか自動判断するので不要
+\newcommand{\argmax}{\mathop{\rm arg~max}\limits} %argumented maximize
+\newcommand{\argmin}{\mathop{\rm arg~min}\limits} %arg.minimize
+\newcommand{\indep}{\mathop{\perp\!\!\!\perp}}% independent
+\newcommand{\plim}{\mathop{\rm plim}} % plim
+\newcommand{\bi}{\boldsymbol}%bold italic
+% ------
+
+
+% amsthm.sty の各環境のラベル名を日本語に (現在は LyX が自動生成してくれるので不要)
+% ただし証明のフォーマットはハードコードされてるので以下のように強制上書き
+\ifdefined\proofname
+  \renewcommand{\proofname}{証明}
+\fi
+% 書き換える場合は以下のように
+%\providecommand{\definitionname}{定義}
+
+% ------
+
+% dcolumn.sty の表のアラインメント設定
+\@ifpackageloaded{dcolumns}{\newcolumntype{.}{D{.}{.}{-1}}}{}
+% 小数点を揃えるアラインメントを定義 \begin{tabular}{r....} のように使う.
+% ------
+
+% ---- prettyref 用の設定 ----
+% label を \label{<CATEGORY>:<Reference ID>} のように書くと,
+% 参照する際に <CATEGORY> に応じてフォーマットが変わる.
+% <CATEGORY> に対応するのは以下, eq, lem, thm, ... など
+% LyX では prettyref を使うと label 挿入場所の環境に応じて自動で補ってくれる
+\@ifpackageloaded{prettyref}{
+  \newrefformat{eq}{\textup{(\ref{#1})}}%
+  \newrefformat{lem}{補題\ref{#1}}%
+  \newrefformat{thm}{定理\ref{#1}}%
+  \newrefformat{prop}{命題\ref{#1}}%
+  \newrefformat{cha}{第\ref{#1}章}%
+  \newrefformat{sec}{第\ref{#1}節}%
+  \newrefformat{tab}{表\ref{#1}}%
+  \newrefformat{fig}{図\ref{#1}}%
+  \newrefformat{alg}{アルゴリズム \ref{#1}}%
+  \newrefformat{tabp}{\pageref{#1} ページの表\ref{#1}}%
+  \newrefformat{figb}{\pageref{#1} ページの図 \ref{#1}}%
+}{}
+% ------
+\usepackage{epigraph}
+
+\makeatother
+
+\usepackage{listings}
+\lstset{language=R,
+escapechar={ø},
+numbers=left,
+numberstyle={\scriptsize},
+stepnumber=1,
+columns={[l]{fullflexible}},
+basicstyle={\ttfamily},
+numbers=left,
+breaklines=true,
+numberstyle={\scriptsize},
+stepnumber=1,
+columns={[l]{fullflexible}},
+basicstyle={\ttfamily},
+identifierstyle={\small},
+commentstyle={\small\itshape},
+keywordstyle={\small\bfseries},
+ndkeywordstyle={\small},
+stringstyle={\small\ttfamily},
+frame=single,
+backgroundcolor={\color[rgb]{0.9,0.9,0.9}},
+rulecolor={\color{myblue}},
+framesep=2ex,
+framexleftmargin={2.5mm},
+numberstyle={\tiny\color{mygray2}},
+commentstyle={\color{mygreen}},
+keywordstyle={\color{blue}},
+stringstyle={\color{mymauve}},
+rulecolor={\color{black}},
+showspaces=true,
+showstringspaces=true}
+\renewcommand{\lstlistingname}{プログラムリスト}
+
+\begin{document}
+\title{{[}Pandoc{]}{[}LaTeX{]}{[}Python{]} LaTeXをはてなブログに変換する pandoc フィルタを作った}
+
+\maketitle
+\tableofcontents{}
+
+\section*{概要}
+
+最近はてなブログの更新がめんどくさくなってきたので効率化をはかる. 一部の要素をはてな記法に変換し, texファイルからはてな記法対応
+html を生成するフィルタを作ってみた.
+
+R Markdown も内部で pandoc 使ってるので\textbf{そのうち R Studio から直接はてなブログに投稿できるようになる}……かもしれない
+
+おおまかな機能は以下の通り.
+\begin{itemize}
+\item LaTeX コードを html + はてな記法に変換する
+\begin{itemize}
+\item はてな記法は自分がよく使う機能のみ. htmlタグで簡単に代用できるものには対応していない
+\end{itemize}
+\item \texttt{\href{https://github.com/lierdakil/pandoc-crossref}{pandoc-crossref}}
+との併用で図表や引用文献リストへのアンカーリンクによる相互参照も自動で生成
+\item 参照している画像ファイルをはてなフォトライフに自動アップロードする
+\end{itemize}
+大昔に\href{https://ill-identified.hatenablog.com/entry/2015/02/24/230057}{texファイルをはてなブログ用に変換するスクリプトを書いた}時は
+pandoc の仕組みを分かっておらず\textbf{構文解析器を無から作ろうとして挫折}したり\textbf{正規表現で誤魔化し}たりしていた.
+実際には\textbf{フィルタという便利機能でだいたいなんとかなる}. ちゃんとマニュアルは読もう.
+
+\section{使い方}
+
+適当な場所にダウンロードしてパスを通しておく.
+
+\href{https://github.com/Gedevan-Aleksizde/pandoc-hateblo}{:embed:}
+
+\begin{lstlisting}
+git clone git@github.com:Gedevan-Aleksizde/pandoc-hateblo.git
+git checkout hatena-filter
+export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
+\end{lstlisting}
+
+フォトライフのAPIキーを取得して, 設定ファイル \texttt{settings.json} に書き込んでおく. \texttt{blog\_name}
+は人によっては違う形式になるはず. \texttt{FOTO\_FOLDER} は画像のアップロード先.
+
+\begin{lstlisting}[language=json]
+{
+  "FOTO_API_KEY": "XXXXXX",
+  "HATENA_USER": "YYYYY",
+  "HATENA_BLOG": "YYYYY.hatenablog.com",
+  "FOTO_FOLDER": "ZZZZ"
+}
+\end{lstlisting}
+
+もしくは上記と同様の環境変数を設定して実行する.
+
+で, 以下のようなコマンドで変換する. \texttt{{[}...{]}} はオプション.
+
+\begin{lstlisting}[language=sh]
+latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] INPUT.tex
+\end{lstlisting}
+
+複数ある場合 (1) カレントディレクトリの \texttt{settings.json}, (2) \texttt{hatena-filter/settings}
+\texttt{/} の \texttt{settings.json}, (3) 環境変数. で優先される.
+
+\section{やりたいこと}
+
+以前と同様, LyX で書いた texファイルを\textbf{はてな記法} (はてなmarkdownではない) に対応したhtmlに変換したい.
+LyX は補完機能が充実しているので, 長いコマンドを短縮名のマクロで再定義するみたいなユーザー定義のマクロはあまり使わない, 使うとしてもコンテンツから分離したレイアウトの設定くらいにしか使わないという想定.
+以下, 変換したいもの一覧 (参考: \href{https://help.hatenablog.com/entry/text-hatena-list}{はてな記法一覧}).
+\begin{itemize}
+\item \texttt{\textbackslash hfref\{\}}は \texttt{{[}url:title=文字列{]}} の記法に変換.
+\begin{itemize}
+\item ブログカード(? あれの呼び方がわからん) を埋め込みたい場合はとりあえずタイトルを \textquotedblright\texttt{:embed}:\textquotedblleft{}
+にした場合のみ例外的に処理する.
+\item タイトルを自動取得したい場合も同様に \textquotedblright\texttt{:title:}\textquotedblleft{}
+にする.
+\item ただしこの措置は同一ソースで複数種類の媒体へ変換するということができない(LaTeX 側が対応していない)
+\item \texttt{\textbackslash url\{\}}はそのままURLを表示する. 例: \url{https://ill-identified.hatenablog.com/}
+\item 平文で書いても自動でリンク
+\end{itemize}
+\item 脚注もはてな記法に. \texttt{(())} で脚注にできるやつ
+\item 数式もはてな記法の \texttt{{[}tex: ...{]}} に置き換える.
+\begin{itemize}
+\item qiitaのようにいちいち変なエスケープをしなくて済むので簡単. 同様にエスケープが必要なはてな markdown ではなくはてな記法を使う理由の1つ.
+\item いつからか別行立て数式が改行しなくなってしまったので別行立てで表示できるようにする. 
+\item タグを反映できるように \texttt{aligned} を全て \texttt{align} に置換 
+\item (pandoc 側でどっち使うのか指定できそうな気もするけどよくわからない)
+\end{itemize}
+\item 引用ブロックは \texttt{\textgreater\textgreater{} ... \textless\textless{}
+}に変換した
+\begin{itemize}
+\item 「引用ブロック(字下げなし)」 「詩句」 (\texttt{quote}環境) 「引用ブロック (字下げあり)」 (\texttt{quotation}
+環境), を変換
+\item \texttt{\textbackslash epligraph\{\}\{\}} も出典付き引用ブロックに変換
+\end{itemize}
+\item コードブロックはスーパーpre記法 \texttt{(\textgreater\textbar\textbar{} ... \textbar\textbar\textless )}
+に変換
+\begin{itemize}
+\item \texttt{\textbackslash begin\{lstlisting\}{[}language={]}...\textbackslash end\{lstlisting\}}
+で言語指定すれば反映
+\item \texttt{minted} には未対応
+\end{itemize}
+\item ただし出典付きの引用ブロックは未対応 (\texttt{\textgreater (出典)\textgreater{} (本文)\textless\textless}
+のやつ). pandoc が対応してない?
+\item 画像の挿入とキャプション周辺のレイアウト.
+\begin{itemize}
+\item これははてなフォトライフとの連携も必要になるので厄介
+\end{itemize}
+\item ちゃんと機能する図表・引用文献の相互参照
+\begin{itemize}
+\item \texttt{pandoc-crossref} でアンカーリンク有効.
+\item しかし \texttt{prettyref.sty} 前提で参照IDは \texttt{fig:} や \texttt{tab:}
+の接頭辞が必要.
+\end{itemize}
+\item 引用文献のフォーマット
+\begin{itemize}
+\item \texttt{jecon.bst} は邦訳情報とかいろいろな拡張フィールドがあるが, CSLで作り直すのは大変
+\item (up)BibTeX だと tex コードに変換してくれないので CSL で我慢する
+\item 誰か BibLaTeX で書いて...
+\item 引用文献にはアマゾンのリンクとかを自動で付けたい
+\end{itemize}
+\item CSSやメタ情報は\textbf{未対応}
+\begin{itemize}
+\item タグとかカスタムURLとかは手動で
+\item CSSはグローバルな設定だけでなんとかする方針
+\end{itemize}
+\end{itemize}
+なお, このエントリも LyX で書いて変換したものをそのまま投稿している. 原稿は\href{https://github.com/Gedevan-Aleksizde/pandoc-hateblo/doc}{ここ}
+
+\section{やり方}
+
+\subsection{インストール}
+
+まずは pandoc を用意する. Ubuntu のレポジトリだとバージョンが少し古いので \href{https://github.com/jgm/pandoc/releases}{github}
+で \texttt{.deb} を落としてきてインストールする. 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1
+を使用した. このへんバージョン制約が多いみたいなので注意. Pandoc 2.9.2.1 に対応する \texttt{\href{https://github.com/lierdakil/pandoc-crossref}{pandoc-crossref}}
+の最新バージョンは 3.6.4 だが, これを少しだけいじったやつを使う (理由は後述). \texttt{stack} のほうは
+ver. 2.3.3
+
+\begin{lstlisting}[language=sh]
+git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
+cd pandoc-crossref
+git checkout 4e02b07
+stack clean
+stack build
+stack install
+\end{lstlisting}
+
+さらに \href{https://github.com/sky-y/pandoc-hateblo}{pandoc-hateblo }
+というのを作ってる人がいたのでフォークしてみたが「見出しを \texttt{h3} タグに変える」という機能だけ作って数年前から止まっていいる.
+しかも私はまだ haskell がよく分かっていないので, \href{https://pandoc.org/filters.html}{フィルタに関する公式ガイド}から辿って見つけた
+Python の \texttt{\href{http://scorreia.com/software/panflute/}{panflute}}
+を使うことにした\footnote{内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から \texttt{–to} フォーマットへ変換,
+という順にパイプラインで実行されているのでフィルタはコマンドラインの標準入出力を操作できるスクリプトならなんでも良いらしい. そのうちでも
+Haskell か Lua で書いたほうが良いらしいが, 今回はどちらも構文を覚える時間が惜しかったので使わなかった. Haskell
+はそのうち覚えたいが……}. その結果, オリジナルとは全く別物になった. なお pandoc を 2.9にしたのは \texttt{panflute} が対応していない\footnote{https://github.com/sergiocorreia/panflute/issues/142}ため.
+
+\href{https://github.com/Gedevan-Aleksizde/pandoc-hateblo}{:embed:}
+
+\subsection{pandoc の処理の概要}
+
+pandoc の内部での処理フローは, (1) ソースを解析する (2) 中間ファイルとして抽象構文木に変換する (3) 指定したフォーマットに再変換する,
+という処理をしており, フィルタは (2) の抽象構文木を修正する処理のことになる\footnote{https://pandoc.org/filters.html}.
+なお中間ファイルは json 形式でも表現できるので, 多くの言語では json 前提で書いたほうが楽かもしれないが, Python
+には \texttt{pandocfilters} と \texttt{panflute} という2種類のpandocフィルタ用モジュールがある.
+今回は \texttt{panflute} を使ってみた.
+
+\texttt{.ast} ファイルに記述される抽象構文木の最小単位 (element) の書式は\texttt{}
+\begin{lstlisting}
+<element_type> <attribures> <content>
+\end{lstlisting}
+となる.\texttt{ \textless element\_type\textgreater} が \texttt{Str}
+(文字列) とか \texttt{Link} (ハイパーリンク) とか,\texttt{ \textless attributes\textgreater}
+は省略可能. 書式はパーレンで括ったリストになる.
+
+\texttt{}
+\begin{lstlisting}
+("", [], [("<key>", "<value>"), (...)])
+\end{lstlisting}
+\texttt{panflute} では, \texttt{.format}, \texttt{\textless element\textgreater .attributes}
+でアクセスできる. \texttt{collections.OrderedDict} 型. ただし平文 (\texttt{Str}
+など) にはこの属性はない.\texttt{ \textless content\textgreater} には (1) ダブルクオーテーションで括った文字列,
+(2) 構文木の入れ子, (3) それらを \texttt{{[}}, \texttt{{]}}で括ったリスト, のどれかを与えられる.
+\texttt{ELEM.content} でアクセスできる. これは \texttt{list} 型.
+
+構文木入れ子の最上層の型は \texttt{Pandoc} であり, \texttt{\textless attributes\textgreater}
+にメタ情報が入っている. ただしこれは \texttt{doc.get\_metadata()} でアクセスする.
+
+\subsection{作った処理}
+
+まずはLaTeXで書いたこのブログの原稿(実際には LyX で作成して texファイルとしてエクスポートしている) を pandoc
+で中間ファイルに変換する. まだ対応関係がよくわからんので以下を何度も実行しながら作った.
+
+\begin{lstlisting}[language=sh]
+pandoc --mathjax -f latex -t native -o blog/intermediate.ast -F ./hateblo-filter.py  blog/test.tex
+\end{lstlisting}
+ 
+
+また, Python 内で \texttt{panflute.convert\_text()} を使うと各フォーマットのテキストや
+\texttt{panflute} のオブジェクトを相互に変換できるのでいろいろ確認できる (たまにうまくいかない).
+
+要素単位の変換処理は \texttt{panflute} でだいたいできるが, 面倒なのは相互参照である. 例えば本文中の「図1」「表2」とか「式(3)」みたいな通し番号を自動で割り当てた上で,
+アンカーリンクを付けたいというのが要件である. 今回使用している pandoc は図表の相互参照に対して自動で番号を割り当ててくれる.
+しかし図や表側のキャプションに 「図 XX: ...」 のような番号を振ることもない\footnote{加えて, 相互参照として認識されるのは \texttt{\textbackslash ref\{...\}} コマンドのみで \texttt{prettyref.sty}
+や \texttt{refstyle.sty} で提供されるコマンドには対応していない.}. また, 文献引用も \texttt{–bibliography=} にファイルを指定すれば自動で \texttt{pandoc-citeproc}
+が呼び出されるが, これも相互参照にアンカーリンクを貼ってくれない.
+
+これに対して \texttt{\href{https://github.com/lierdakil/pandoc-crossref}{pandoc-corssref}}
+という相互参照用のフィルタがある. それぞれ末尾参考文献リストと図表の相互参照にアンカーを張るのことができる\footnote{この機能は\texttt{ link-citations=true} と \texttt{linkReferences=true}
+をメタデータに追加することで切り替えられる. しかしなんでハイフンだったりキャメルだったりするのか? また, デフォルトでは \texttt{false}
+のとのことだが, 想定してない LaTeX からだからなのか指定しなくてもリンクされる.}. このフィルタは基本的に Markdown から他の媒体への変換を想定しており, LaTeX からの変換は想定していない (issue
+\href{https://github.com/lierdakil/pandoc-crossref/issues/250}{\#250})
+ことになっているが, 今回インストールしたバージョンは LaTeX からでも一応動作するようだ. 
+
+ただしいくつか問題がある. まず, \texttt{pandoc-crossref} の相互参照IDの命名にはルールがある. 図なら
+\texttt{fig:}, 表なら \texttt{tbl:}, セクションタイトルなら \texttt{sec:} と言うふうに接頭辞が必要だ.
+これは私が LyX で使っている \texttt{prettyref.sty} でも似たルールで採用されている. しかし, こちらでは表は
+\texttt{tab:} であり, \texttt{pandoc-crossref} 側は接頭辞がハードコードされている. ver.
+0.4 以降では自由にカスタマイズできるようにするらしい\footnote{https://github.com/lierdakil/pandoc-crossref/issues/200}が,
+今はpandoc, \texttt{panflute} との互換性で古いバージョンを使わざるをえない. そこで\textbf{ハードコードにはハードコードの上書きで対処}した.
+全くスマートではないがまだ haskell がわからないので一旦これでやっていく. これがオリジナルではなくフォークリポジトリを用意した理由である.
+もう1つは LaTeX からの変換の場合, 参照IDが表示されてしまう点. これは \texttt{panflute} でその要素を除去するように修正する.
+
+それ以外の置き換えはさほど難しい話ではなく, \texttt{panflute} で簡単に対処できる.
+
+最後に, はてなブログに画像を貼り付ける場合, よそのサイトからの直接リンク以外は「はてなフォトライフ」というサービスに投稿した画像しか使えない.
+このサービスには Web API が用意されている\footnote{http://developer.hatena.ne.jp/ja/documents/fotolife/apis/atom}ので,
+これを利用して自動でアップロードする機能も付けている.
+
+あとは pandoc のオプションでだいたいなんとかなる. 以下のようなオプションの想定で実行している.
+
+\begin{lstlisting}[language=sh]
+pandoc --mathjax --wrap=auto -f latex -t html  -F pandoc-crossref -F hateblo-filter.py -MfigureTitle='図' -MfigPrefix='図' -MtableTitle='表' -MtblPrefix='表' --bibliography=CITATIONS.bib --csl=CSL.csl -o blog/OUTPUT.html INPUT.tex
+\end{lstlisting}
+
+
+\section{用例}
+
+このセクションでは上記で挙げた機能を確認する.
+
+はてな記法のリンクはリンク先のタイトルを取得できたり埋め込みできたりと便利である. たとえば \texttt{{[}https://hogehoge:title}
+\texttt{{]}} で『\href{https://ill-identified.hatenablog.com/}{:title:}』のようにタイトルを自動取得できる.
+\texttt{:embed:} を使えば「ブログカード」を生成する.
+
+\href{https://ill-identified.hatenablog.com/}{:embed:}
+
+pandocはデフォルトだと以下のような文中の別行立て数式を,
+\begin{align}
+\sin^{2}x+\cos^{2}x= & 1,\tag{A}\label{eq:sincos}\\
+\int_{\mathbb{R}}xdF(x;\theta)= & \mu\tag{B}\label{eq:integral}
+\end{align}
+のように独立行で挿入すると改行されずインラインになってしまう. 一方で明示的に改行すると段落まで改められてしまう. そこで改行コードを直接挿入することにした\footnote{最近のバージョンはどういうルールや意図で改行の有無を決めているのかよくわからない. –wrap=preserve なら SoftBreak
+で改行してくれるが, 一方でソースファイルで改行も何も無いところに唐突に SoftBreak を挿入してしまうのでレイアウトが崩れるし,
+かといって none や auto にすると全然改行してくれない.}. また, mathjax を指定すると数式を \texttt{\textbackslash{[} ... \textbackslash{]}}
+で囲むが, はてな記法 \texttt{{[}tex: ... {]}} の方が便利なので置換している.
+
+引用ブロックもはてな記法が便利なので, \texttt{quote}, \texttt{quotation}, \texttt{epigraph}
+環境を変換対象とする\footnote{ただし, はてな記法の引用ブロックの出典にはURLを指定することしかできないため, \textbackslash LaTeX との互換性は完全ではない.}.
+\begin{quote}
+かたつぶりそろそろ登れ富士の山
+\begin{flushright}
+小林一茶
+\par\end{flushright}
+
+\end{quote}
+\texttt{\textbackslash texttt\{epigraph\}}で出典付き引用
+
+\epigraph{皆さんは最近、文中に「メキシコ」「真の男」「バンデラス」「腰抜け」などのワードが頻出する怪文書やネットミームをご覧になった事があるでしょうか？　それに伴い「逆噴射文体」「逆噴射先生」等の呼称を見かけて、ますます混乱した事は？　これは、逆噴射聡一郎先生のシグネチャー文章です。（あるいは、それを模倣したファンによる文体模写です）}{https://diehardtales.com/n/n73ec21c8457b:title=ダイハードテイルズ所属作家紹介：逆噴射聡一郎とは？}
+
+\subsection{相互参照}
+
+図表のキャプションと相互参照. 図 \ref{fig:tiger}, 表 \ref{tab:tab-example} のように付番とアンカーリンクを自動で行う.
+
+\begin{table}
+\begin{tabular}{|c|c|c|}
+\hline 
+ & 1 & 2\tabularnewline
+\hline 
+\hline 
+a & x & o\tabularnewline
+\hline 
+b & o & x\tabularnewline
+\hline 
+\end{tabular}
+
+\caption{ここに表のキャプション\label{tab:tab-example}}
+\end{table}
+
+\begin{figure}
+\includegraphics[width=0.7\textwidth]{tiger}
+
+\caption{ここにキャプション\label{fig:tiger}}
+\end{figure}
+
+数式参照も可能. \ref{eq:sincos}, \ref{eq:integral}
+
+文献引用にも対応. これらの本を表示例に選んだ理由は特にない: \citet{Hoshino2009}, \citet{yamamoto2019},
+\citet{HastieTibshrianiFriedman2009}, \citet{igami2017Estimating}
+
+\section{未解決事項}
+\begin{itemize}
+\item 目次の配置は自動化していない. pandoc の \texttt{-–toc} オプションは \texttt{-s} と併用しない限り意味がない.
+しかし \texttt{-s} では不要なヘッダが大量に作られてしまい邪魔である.
+\item 数式参照には数式側に \texttt{\textbackslash tag\{\}} が必須
+\item \texttt{prettyref}/\texttt{refstyle} への対応. 相互参照のときに参照IDだけ書けば十分なはずだが,
+\texttt{\textbackslash ref\{\}} では「図」とか「表」とか接頭辞も毎回いちいち書く必要がある. これはナンセンスなので私は
+LyX 上では \texttt{prettyref.sty} の書式設定で対処している(LyX 開発者側は類似機能を持つ \texttt{refstyle.sty}
+に移行したがっているが私は未対応). しかし今回はまだ pandoc は \texttt{prettyref.sty} の \texttt{\textbackslash prettyref\{\}}
+に対応していない.
+\item バックスラッシュで始まる TeX コマンドを平文で書くと MathJaX が暴発することがある. しかしこれははてなブログが悪いのでこちらでは解決できない.
+\item 参考文献リストのフォーマット. CSLファイルか biblatex のフォーマットを書く必要がある. CSL は XML で書くので比較的簡単だが,
+仕様上, 私が LaTeX でいつも使っている \texttt{\href{https://github.com/ShiroTakeda/jecon-bst}{jecon.bst}}
+を再現するのは難しい. おそらくは biblatex で書いたほうがよそにも流用できて良さそうだが (Word を使う予定がないので
+CSL は全く出番がない) である. あるいはフィルタとして処理を書くという方針でもできるだろうが, どちらも大変なので一旦保留.
+\item せっかくAPI使うのなら投稿まで自動化してもよかったけどめんどくさくなった
+\end{itemize}
+\bibliographystyle{jecon}
+\bibliography{example}
+
+\end{document}

@@ -1,53 +1,46 @@
-# pandoc-hateblo: はてなブログ用Pandocフィルタ
+# pandoc-hateblo: はてな記法用pandocフィルタ
 
-はてなブログのMarkdown記法をサポートする、Pandoc用のフィルタです。
+はてなブログのはてな記法に変換するフィルタ
 
-## 必要なもの
+## 要件
 
-- Pandoc
-    - Mac: `$ brew install pandoc`
-    - Windows: [ダウンロードページ](https://github.com/jgm/pandoc/releases/latest)からダウンロード・インストール
-- Stack (Haskell用ビルドツール)
-    - Mac: `$ brew install haskell-stack`
-    - Windows: [こちらを参照](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows)
+- Python 3.8
+- [panflute](http://scorreia.com/software/panflute/) 1.12.5
+- Pandoc 2.9.2.1
+- pandoc-crossref 0.3.6.4
+- Stack 2.3.3 くらい
+- bash の使える環境
 
-## ビルド・インストール
+## インストール方法
+
+1. 適当なディレクトリに移動して
+
+```sh
+git clone git@github.com:Gedevan-Aleksizde/pandoc-hateblo.git
+git checkout hatena-filter
+export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
+```
+
+2. はてなフォトライフのAPIキーを取得して, 設定ファイル `settings.json` に書き込んでおく. `blog_name` は人によっては違う形式になるはず. `FOTO_FOLDER` は画像のアップロード先.
 
 ```
-$ git clone https://github.com/sky-y/pandoc-hateblo.git
-$ cd pandoc-hateblo
-$ stack setup
-$ stack build
-$ stack install
+{
+  "FOTO_API_KEY": "XXXXXX",
+  "HATENA_USER": "YYYYY",
+  "HATENA_BLOG": "YYYYY.hatenablog.com",
+  "FOTO_FOLDER": "ZZZZ"
+}
 ```
 
-`stack install`により、`~/.local/bin`にバイナリがコピーされます。
+もしくは上記のようなファイルをカレントディレクトリに置く, または各パラメータと同名の環境変数を設定して実行する.
 
-（`~/.local/bin`に.bashrcや.zshrcなどに`PATH`を設定することをおすすめします）
 
-## やること
-
-- 見出しを`h3`がトップになるようにする
-- `h3`から`h5`までを見出しとし、それより低いレベルの見出しをただの段落（テキスト）にする
+## 主な機能
 
 ## 使い方
 
-```
-pandoc input.hoge --filter hateblo -o output.md
-```
-
-## ラッパースクリプト: opml2hateblo
-
-WorkFlowyなどのアウトライナー（OPML形式でエクスポート）をPandocではてなブログMarkdownに変換するスクリプトです。
-
-（Pandocが余計に付けるバックスラッシュも除去します）
+以下のようなコマンドで変換する. [...] はオプション.
 
 ```
-$ opml2hateblo input.opml
+latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] INPUT.tex
 ```
-
-同様に、`~/.local/bin`(あるいは`PATH`の通っているディレクトリ)にコピーするか、シンボリックリンクを張ることをおすすめします。
-
-## ライセンス
-
-MIT
