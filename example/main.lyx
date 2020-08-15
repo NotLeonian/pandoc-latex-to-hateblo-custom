@@ -1,0 +1,1951 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass bxjsarticle
+\begin_preamble
+% LyX 2.3.3 で動作確認
+% ifplatform を使用するために, 形式 -> 「外部プログラムの実行を許可」にチェックを入れる
+% やりたくないなら ifplatform でフォント指定分岐しているところを書き換える
+\usepackage[AutoFallBack=true]{zxjatype}
+\usepackage{ifthen}
+\usepackage{ifplatform} % 環境依存で記述を条件分岐させるために必要
+
+% document 環境内で \label 使わないと LyX が使用判定してくれず, エラーになるので以下で必ず読み込み
+\usepackage{listings}
+\usepackage{color}
+\usepackage{prettyref} 
+
+% 以下4パッケージは表のデザイン用
+\usepackage{dcolumn}
+\usepackage{multicol}
+\usepackage{boites}
+\usepackage{booktabs}
+
+
+% --- color.sty で色登録 ----- %
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{myblue}{rgb}{0,0,0.6}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mygray2}{rgb}{0.2,0.2,0.2}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+% -----
+
+% ---- zxjatype.sty でフォント指定 ---- %
+% 欧文フォントはフォントタブで指定できるが, オプション指定ができないので欧文・和文まとめてここに書く
+% ifplatform でOSごとに違うフォントを指定しているため, -shell-escape をつけてコンパイルする必要あり
+\iflinux
+  \setmainfont[Ligatures=TeX]{Palatino Linotype}
+  \setsansfont[Ligatures=TeX]{Arial}
+  \setmonofont{Ricty Diminished}
+  \setjamainfont{Noto Serif CJK JP} %和文フォント指定
+  \setjasansfont{Noto Sans CJK JP} %和文サンセリフ指定
+  \setjamonofont{Ricty Diminished} %和文等幅フォント
+\fi
+% fail-safe として *NIX になったときも Linux と同じ設定になるように
+\ifthenelse{\equal{\platformname}{*NIX}}{
+  \setmainfont[Ligatures=TeX]{Palatino Linotype}
+  \setsansfont[Ligatures=TeX]{Arial}
+  \setmonofont{Ricty Diminished}
+  \setjamainfont{Noto Serif CJK JP} %和文フォント指定
+  \setjasansfont{Noto Sans CJK JP} %和文サンセリフ指定
+  \setjamonofont{Ricty Diminished} %和文等幅フォント
+}{}
+\ifmacosx
+  \setmainfont[Ligatures=TeX]{Times} %欧文フォント族指定
+  \setsansfont[Ligatures=TeX]{Helvetica} %欧文サンセリフフォント指定
+  \setmonofont{Ricty Diminished} %欧文等幅フォント指定
+  \setjamainfont[BoldFont=Hiragino Mincho ProN W6]{Hiragino Mincho ProN W3} %和文フォント指定
+  \setjasansfont[BoldFont=Hiragino Kaku Gothic ProN W6]{Hiragino Maru Gothic ProN W4} %和文サンセリフ指定
+  \setjamonofont[BoldFont=Ricty Diminished]{Ricty Diminished} %和文等幅フォント
+\fi
+\ifwindows
+  \setmainfont[Ligatures=TeX]{Palatino Linotype}
+  \setsansfont[Ligatures=TeX]{Arial}
+  \setmonofont{Ricty Diminished}
+  \setjamainfont[BoldFont=Noto Sans CJK JP]{Noto Serif CJK JP} %和文フォント指定
+  \setjasansfont[BoldFont=Noto Sans CJK JP]{Noto Sans CJK JP} %和文サンセリフ指定
+  \setjamonofont[BoldFont=Ricty Diminished]{Ricty Diminished} %和文等幅フォント
+\fi
+% document 内では \textranwen{ dararara } で任意の文を欧文として処理できる
+% -----
+
+
+% --- 数式記号を新たに定義 ---- %
+% amsmath 等は LyX が読み込むべきか自動判断するので不要
+\newcommand{\argmax}{\mathop{\rm arg~max}\limits} %argumented maximize
+\newcommand{\argmin}{\mathop{\rm arg~min}\limits} %arg.minimize
+\newcommand{\indep}{\mathop{\perp\!\!\!\perp}}% independent
+\newcommand{\plim}{\mathop{\rm plim}} % plim
+\newcommand{\bi}{\boldsymbol}%bold italic
+% ------
+
+
+% amsthm.sty の各環境のラベル名を日本語に (現在は LyX が自動生成してくれるので不要)
+% ただし証明のフォーマットはハードコードされてるので以下のように強制上書き
+\ifdefined\proofname
+  \renewcommand{\proofname}{証明}
+\fi
+% 書き換える場合は以下のように
+%\providecommand{\definitionname}{定義}
+
+% ------
+
+% dcolumn.sty の表のアラインメント設定
+\@ifpackageloaded{dcolumns}{\newcolumntype{.}{D{.}{.}{-1}}}{}
+% 小数点を揃えるアラインメントを定義 \begin{tabular}{r....} のように使う.
+% ------
+
+% ---- prettyref 用の設定 ----
+% label を \label{<CATEGORY>:<Reference ID>} のように書くと,
+% 参照する際に <CATEGORY> に応じてフォーマットが変わる.
+% <CATEGORY> に対応するのは以下, eq, lem, thm, ... など
+% LyX では prettyref を使うと label 挿入場所の環境に応じて自動で補ってくれる
+\@ifpackageloaded{prettyref}{
+  \newrefformat{eq}{\textup{(\ref{#1})}}%
+  \newrefformat{lem}{補題\ref{#1}}%
+  \newrefformat{thm}{定理\ref{#1}}%
+  \newrefformat{prop}{命題\ref{#1}}%
+  \newrefformat{cha}{第\ref{#1}章}%
+  \newrefformat{sec}{第\ref{#1}節}%
+  \newrefformat{tab}{表\ref{#1}}%
+  \newrefformat{fig}{図\ref{#1}}%
+  \newrefformat{alg}{アルゴリズム \ref{#1}}%
+  \newrefformat{tabp}{\pageref{#1} ページの表\ref{#1}}%
+  \newrefformat{figb}{\pageref{#1} ページの図 \ref{#1}}%
+}{}
+% ------
+\usepackage{epigraph}
+\end_preamble
+\use_default_options false
+\begin_modules
+theorems-bytype
+theorems-sec-bytype
+eqs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\begin_local_layout
+Format 66
+Style Enume_alph
+Category             List
+Margin                Static
+LatexType             Item_Environment
+LatexName             enumerate
+LatexParam      [(a)]
+NextNoIndent          1
+LeftMargin            MMN
+LabelSep              xx
+ItemSep               0.2
+TopSep                0.7
+BottomSep             0.7
+ParSep                0.3
+Align                 Block
+AlignPossible         Block, Left
+LabelType             enumerate
+LabelString           "aaaaaaaa"
+HTMLTag               ul
+HTMLItem              li
+HTMLLabel             NONE
+End
+\end_local_layout
+\language japanese
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\pdf_quoted_options "linkcolor=cyan,citecolor=cyan,urlcolor=magenta"
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style jecon
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "language=R,escapechar={ø},numbers=left,numberstyle={\scriptsize},stepnumber=1,columns={[l]{fullflexible}},basicstyle={\ttfamily},numbers=left,breaklines=true,numberstyle={\scriptsize},stepnumber=1,columns={[l]{fullflexible}},basicstyle={\ttfamily},identifierstyle={\small},commentstyle={\small\itshape},keywordstyle={\small\bfseries},ndkeywordstyle={\small},stringstyle={\small\ttfamily},frame=single,backgroundcolor={\color[rgb]{0.9,0.9,0.9}},rulecolor={\color{myblue}},framesep=2ex,framexleftmargin={2.5mm},numberstyle={\tiny\color{mygray2}},commentstyle={\color{mygreen}},keywordstyle={\color{blue}},stringstyle={\color{mymauve}},rulecolor={\color{black}},showspaces=true,showstringspaces=true"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+[Pandoc][LaTeX][Python] LaTeXをはてなブログに変換する pandoc フィルタを作った
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+概要
+\end_layout
+
+\begin_layout Standard
+最近はてなブログの更新がめんどくさくなってきたので効率化をはかる.
+ 一部の要素をはてな記法に変換し, texファイルからはてな記法対応 html を生成するフィルタを作ってみた.
+\end_layout
+
+\begin_layout Standard
+R Markdown も内部で pandoc 使ってるので
+\series bold
+そのうち R Studio から直接はてなブログに投稿できるようになる
+\series default
+……かもしれない
+\end_layout
+
+\begin_layout Standard
+おおまかな機能は以下の通り.
+\end_layout
+
+\begin_layout Itemize
+LaTeX コードを html + はてな記法に変換する
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+はてな記法は自分がよく使う機能のみ.
+ htmlタグで簡単に代用できるものには対応していない
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+\begin_inset CommandInset href
+LatexCommand href
+name "pandoc-crossref"
+target "https://github.com/lierdakil/pandoc-crossref"
+literal "false"
+
+\end_inset
+
+
+\family default
+ との併用で図表や引用文献リストへのアンカーリンクによる相互参照も自動で生成
+\end_layout
+
+\begin_layout Itemize
+参照している画像ファイルをはてなフォトライフに自動アップロードする
+\end_layout
+
+\begin_layout Standard
+大昔に
+\begin_inset CommandInset href
+LatexCommand href
+name "texファイルをはてなブログ用に変換するスクリプトを書いた"
+target "https://ill-identified.hatenablog.com/entry/2015/02/24/230057"
+literal "false"
+
+\end_inset
+
+時は pandoc の仕組みを分かっておらず
+\series bold
+構文解析器を無から作ろうとして挫折
+\series default
+したり
+\series bold
+正規表現で誤魔化し
+\series default
+たりしていた.
+ 実際には
+\series bold
+フィルタという便利機能でだいたいなんとかなる
+\series default
+.
+ ちゃんとマニュアルは読もう.
+\end_layout
+
+\begin_layout Section
+使い方
+\end_layout
+
+\begin_layout Standard
+適当な場所にダウンロードしてパスを通しておく.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name ":embed:"
+target "https://github.com/Gedevan-Aleksizde/pandoc-hateblo"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+git clone git@github.com:Gedevan-Aleksizde/pandoc-hateblo.git
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout hatena-filter
+\end_layout
+
+\begin_layout Plain Layout
+
+export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+フォトライフのAPIキーを取得して, 設定ファイル 
+\family typewriter
+settings.json
+\family default
+ に書き込んでおく.
+ 
+\family typewriter
+blog_name
+\family default
+ は人によっては違う形式になるはず.
+ 
+\family typewriter
+FOTO_FOLDER
+\family default
+ は画像のアップロード先.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=json"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  "FOTO_API_KEY": "XXXXXX",
+\end_layout
+
+\begin_layout Plain Layout
+
+  "HATENA_USER": "YYYYY",
+\end_layout
+
+\begin_layout Plain Layout
+
+  "HATENA_BLOG": "YYYYY.hatenablog.com",
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\begin_inset Quotes eld
+\end_inset
+
+FOTO_FOLDER
+\begin_inset Quotes erd
+\end_inset
+
+: 
+\begin_inset Quotes eld
+\end_inset
+
+ZZZZ
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+もしくは上記と同様の環境変数を設定して実行する.
+\end_layout
+
+\begin_layout Standard
+で, 以下のようなコマンドで変換する.
+ 
+\family typewriter
+[...]
+\family default
+ はオプション.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl]
+ INPUT.tex
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+複数ある場合 (1) カレントディレクトリの 
+\family typewriter
+settings.json
+\family default
+, (2) 
+\family typewriter
+hatena-filter/settings
+\family default
+ 
+\family typewriter
+/
+\family default
+ の 
+\family typewriter
+settings.json
+\family default
+, (3) 環境変数.
+ で優先される.
+\end_layout
+
+\begin_layout Section
+やりたいこと
+\end_layout
+
+\begin_layout Standard
+以前と同様, LyX で書いた texファイルを
+\series bold
+はてな記法
+\series default
+ (はてなmarkdownではない) に対応したhtmlに変換したい.
+ LyX は補完機能が充実しているので, 長いコマンドを短縮名のマクロで再定義するみたいなユーザー定義のマクロはあまり使わない, 使うとしてもコンテンツから分離
+したレイアウトの設定くらいにしか使わないという想定.
+ 以下, 変換したいもの一覧 (参考: 
+\begin_inset CommandInset href
+LatexCommand href
+name "はてな記法一覧"
+target "https://help.hatenablog.com/entry/text-hatena-list"
+literal "false"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+
+\backslash
+hfref{}
+\family default
+は 
+\family typewriter
+[url:title=文字列]
+\family default
+ の記法に変換.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+ブログカード(? あれの呼び方がわからん) を埋め込みたい場合はとりあえずタイトルを 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+:embed
+\family default
+:
+\begin_inset Quotes erd
+\end_inset
+
+ にした場合のみ例外的に処理する.
+\end_layout
+
+\begin_layout Itemize
+タイトルを自動取得したい場合も同様に 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+:title:
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ にする.
+\end_layout
+
+\begin_layout Itemize
+ただしこの措置は同一ソースで複数種類の媒体へ変換するということができない(LaTeX 側が対応していない)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+
+\backslash
+url{}
+\family default
+はそのままURLを表示する.
+ 例: 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://ill-identified.hatenablog.com/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+平文で書いても自動でリンク
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+脚注もはてな記法に.
+ 
+\family typewriter
+(())
+\family default
+ で脚注にできるやつ
+\end_layout
+
+\begin_layout Itemize
+数式もはてな記法の 
+\family typewriter
+[tex: ...]
+\family default
+ に置き換える.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+qiitaのようにいちいち変なエスケープをしなくて済むので簡単.
+ 同様にエスケープが必要なはてな markdown ではなくはてな記法を使う理由の1つ.
+\end_layout
+
+\begin_layout Itemize
+いつからか別行立て数式が改行しなくなってしまったので別行立てで表示できるようにする.
+ 
+\end_layout
+
+\begin_layout Itemize
+タグを反映できるように 
+\family typewriter
+aligned
+\family default
+ を全て 
+\family typewriter
+align
+\family default
+ に置換 
+\end_layout
+
+\begin_layout Itemize
+(pandoc 側でどっち使うのか指定できそうな気もするけどよくわからない)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+引用ブロックは 
+\family typewriter
+>> ...
+ << 
+\family default
+に変換した
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+「引用ブロック(字下げなし)」 「詩句」 (
+\family typewriter
+quote
+\family default
+環境) 「引用ブロック (字下げあり)」 (
+\family typewriter
+quotation
+\family default
+ 環境), を変換
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+
+\backslash
+epligraph{}{}
+\family default
+ も出典付き引用ブロックに変換
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+コードブロックはスーパーpre記法 
+\family typewriter
+(>|| ...
+ ||<)
+\family default
+ に変換
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+
+\backslash
+begin{lstlisting}[language=]...
+\backslash
+end{lstlisting}
+\family default
+ で言語指定すれば反映
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+minted
+\family default
+ には未対応
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+ただし出典付きの引用ブロックは未対応 (
+\family typewriter
+>(出典)> (本文)<<
+\family default
+ のやつ).
+ pandoc が対応してない?
+\end_layout
+
+\begin_layout Itemize
+画像の挿入とキャプション周辺のレイアウト.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+これははてなフォトライフとの連携も必要になるので厄介
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+ちゃんと機能する図表・引用文献の相互参照
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+pandoc-crossref
+\family default
+ でアンカーリンク有効.
+\end_layout
+
+\begin_layout Itemize
+しかし 
+\family typewriter
+prettyref.sty
+\family default
+ 前提で参照IDは 
+\family typewriter
+fig:
+\family default
+ や 
+\family typewriter
+tab:
+\family default
+ の接頭辞が必要.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+引用文献のフォーマット
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+jecon.bst
+\family default
+ は邦訳情報とかいろいろな拡張フィールドがあるが, CSLで作り直すのは大変
+\end_layout
+
+\begin_layout Itemize
+(up)BibTeX だと tex コードに変換してくれないので CSL で我慢する
+\end_layout
+
+\begin_layout Itemize
+誰か BibLaTeX で書いて...
+\end_layout
+
+\begin_layout Itemize
+引用文献にはアマゾンのリンクとかを自動で付けたい
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+CSSやメタ情報は
+\series bold
+未対応
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+タグとかカスタムURLとかは手動で
+\end_layout
+
+\begin_layout Itemize
+CSSはグローバルな設定だけでなんとかする方針
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+なお, このエントリも LyX で書いて変換したものをそのまま投稿している.
+ 原稿は
+\begin_inset CommandInset href
+LatexCommand href
+name "ここ"
+target "https://github.com/Gedevan-Aleksizde/pandoc-hateblo/doc"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+やり方
+\end_layout
+
+\begin_layout Subsection
+インストール
+\end_layout
+
+\begin_layout Standard
+まずは pandoc を用意する.
+ Ubuntu のレポジトリだとバージョンが少し古いので 
+\begin_inset CommandInset href
+LatexCommand href
+name "github"
+target "https://github.com/jgm/pandoc/releases"
+literal "false"
+
+\end_inset
+
+ で 
+\family typewriter
+.deb
+\family default
+ を落としてきてインストールする.
+ 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1 を使用した.
+ このへんバージョン制約が多いみたいなので注意.
+ Pandoc 2.9.2.1 に対応する 
+\family typewriter
+
+\begin_inset CommandInset href
+LatexCommand href
+name "pandoc-crossref"
+target "https://github.com/lierdakil/pandoc-crossref"
+literal "false"
+
+\end_inset
+
+
+\family default
+ の最新バージョンは 3.6.4 だが, これを少しだけいじったやつを使う (理由は後述).
+ 
+\family typewriter
+stack
+\family default
+ のほうは ver.
+ 2.3.3
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
+\end_layout
+
+\begin_layout Plain Layout
+
+cd pandoc-crossref
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout 4e02b07
+\end_layout
+
+\begin_layout Plain Layout
+
+stack clean
+\end_layout
+
+\begin_layout Plain Layout
+
+stack build
+\end_layout
+
+\begin_layout Plain Layout
+
+stack install
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+さらに 
+\begin_inset CommandInset href
+LatexCommand href
+name "pandoc-hateblo "
+target "https://github.com/sky-y/pandoc-hateblo"
+literal "false"
+
+\end_inset
+
+ というのを作ってる人がいたのでフォークしてみたが「見出しを 
+\family typewriter
+h3
+\family default
+ タグに変える」という機能だけ作って数年前から止まっていいる.
+ しかも私はまだ haskell がよく分かっていないので, 
+\begin_inset CommandInset href
+LatexCommand href
+name "フィルタに関する公式ガイド"
+target "https://pandoc.org/filters.html"
+literal "false"
+
+\end_inset
+
+から辿って見つけた Python の 
+\family typewriter
+
+\begin_inset CommandInset href
+LatexCommand href
+name "panflute"
+target "http://scorreia.com/software/panflute/"
+literal "false"
+
+\end_inset
+
+
+\family default
+ を使うことにした
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から 
+\family typewriter
+–to
+\family default
+ フォーマットへ変換, という順にパイプラインで実行されているのでフィルタはコマンドラインの標準入出力を操作できるスクリプトならなんでも良いらしい.
+ そのうちでも Haskell か Lua で書いたほうが良いらしいが, 今回はどちらも構文を覚える時間が惜しかったので使わなかった.
+ Haskell はそのうち覚えたいが……
+\end_layout
+
+\end_inset
+
+.
+ その結果, オリジナルとは全く別物になった.
+ なお pandoc を 2.9にしたのは 
+\family typewriter
+panflute
+\family default
+ が対応していない
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+https://github.com/sergiocorreia/panflute/issues/142
+\end_layout
+
+\end_inset
+
+ため.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name ":embed:"
+target "https://github.com/Gedevan-Aleksizde/pandoc-hateblo"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+pandoc の処理の概要
+\end_layout
+
+\begin_layout Standard
+pandoc の内部での処理フローは, (1) ソースを解析する (2) 中間ファイルとして抽象構文木に変換する (3) 指定したフォーマットに再変換する,
+ という処理をしており, フィルタは (2) の抽象構文木を修正する処理のことになる
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+https://pandoc.org/filters.html
+\end_layout
+
+\end_inset
+
+.
+ なお中間ファイルは json 形式でも表現できるので, 多くの言語では json 前提で書いたほうが楽かもしれないが, Python には 
+\family typewriter
+pandocfilters
+\family default
+ と 
+\family typewriter
+panflute
+\family default
+ という2種類のpandocフィルタ用モジュールがある.
+ 今回は 
+\family typewriter
+panflute
+\family default
+ を使ってみた.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+.ast
+\family default
+ ファイルに記述される抽象構文木の最小単位 (element) の書式は
+\family typewriter
+
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<element_type> <attribures> <content>
+\end_layout
+
+\end_inset
+
+
+\family default
+となる.
+
+\family typewriter
+ <element_type>
+\family default
+ が 
+\family typewriter
+Str
+\family default
+ (文字列) とか 
+\family typewriter
+Link
+\family default
+ (ハイパーリンク) とか,
+\family typewriter
+ <attributes>
+\family default
+ は省略可能.
+ 書式はパーレンで括ったリストになる.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+(
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+, [], [(
+\begin_inset Quotes eld
+\end_inset
+
+<key>
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+<value>
+\begin_inset Quotes erd
+\end_inset
+
+), (...)])
+\end_layout
+
+\end_inset
+
+panflute
+\family default
+ では, 
+\family typewriter
+.format
+\family default
+, 
+\family typewriter
+<element>.attributes
+\family default
+ でアクセスできる.
+ 
+\family typewriter
+collections.OrderedDict
+\family default
+ 型.
+ ただし平文 (
+\family typewriter
+Str
+\family default
+ など) にはこの属性はない.
+
+\family typewriter
+ <content>
+\family default
+ には (1) ダブルクオーテーションで括った文字列, (2) 構文木の入れ子, (3) それらを 
+\family typewriter
+[
+\family default
+, 
+\family typewriter
+]
+\family default
+で括ったリスト, のどれかを与えられる.
+ 
+\family typewriter
+ELEM.content
+\family default
+ でアクセスできる.
+ これは 
+\family typewriter
+list
+\family default
+ 型.
+\end_layout
+
+\begin_layout Standard
+構文木入れ子の最上層の型は 
+\family typewriter
+Pandoc
+\family default
+ であり, 
+\family typewriter
+<attributes>
+\family default
+ にメタ情報が入っている.
+ ただしこれは 
+\family typewriter
+doc.get_metadata()
+\family default
+ でアクセスする.
+\end_layout
+
+\begin_layout Subsection
+作った処理
+\end_layout
+
+\begin_layout Standard
+まずはLaTeXで書いたこのブログの原稿(実際には LyX で作成して texファイルとしてエクスポートしている) を pandoc で中間ファイルに変換する.
+ まだ対応関係がよくわからんので以下を何度も実行しながら作った.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pandoc --mathjax -f latex -t native -o blog/intermediate.ast -F ./hateblo-filter.py
+  blog/test.tex
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+また, Python 内で 
+\family typewriter
+panflute.convert_text()
+\family default
+ を使うと各フォーマットのテキストや 
+\family typewriter
+panflute
+\family default
+ のオブジェクトを相互に変換できるのでいろいろ確認できる (たまにうまくいかない).
+\end_layout
+
+\begin_layout Standard
+要素単位の変換処理は 
+\family typewriter
+panflute
+\family default
+ でだいたいできるが, 面倒なのは相互参照である.
+ 例えば本文中の「図1」「表2」とか「式(3)」みたいな通し番号を自動で割り当てた上で, アンカーリンクを付けたいというのが要件である.
+ 今回使用している pandoc は図表の相互参照に対して自動で番号を割り当ててくれる.
+ しかし図や表側のキャプションに 「図 XX: ...」 のような番号を振ることもない
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+加えて, 相互参照として認識されるのは 
+\family typewriter
+
+\backslash
+ref{...}
+\family default
+ コマンドのみで 
+\family typewriter
+prettyref.sty
+\family default
+ や 
+\family typewriter
+refstyle.sty
+\family default
+ で提供されるコマンドには対応していない.
+\end_layout
+
+\end_inset
+
+.
+ また, 文献引用も 
+\family typewriter
+–bibliography=
+\family default
+ にファイルを指定すれば自動で 
+\family typewriter
+pandoc-citeproc
+\family default
+ が呼び出されるが, これも相互参照にアンカーリンクを貼ってくれない.
+\end_layout
+
+\begin_layout Standard
+これに対して 
+\family typewriter
+
+\begin_inset CommandInset href
+LatexCommand href
+name "pandoc-corssref"
+target "https://github.com/lierdakil/pandoc-crossref"
+literal "false"
+
+\end_inset
+
+
+\family default
+ という相互参照用のフィルタがある.
+ それぞれ末尾参考文献リストと図表の相互参照にアンカーを張るのことができる
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+この機能は
+\family typewriter
+ link-citations=true
+\family default
+ と 
+\family typewriter
+linkReferences=true
+\family default
+ をメタデータに追加することで切り替えられる.
+ しかしなんでハイフンだったりキャメルだったりするのか? また, デフォルトでは 
+\family typewriter
+false
+\family default
+ のとのことだが, 想定してない LaTeX からだからなのか指定しなくてもリンクされる.
+\end_layout
+
+\end_inset
+
+.
+ このフィルタは基本的に Markdown から他の媒体への変換を想定しており, LaTeX からの変換は想定していない (issue 
+\begin_inset CommandInset href
+LatexCommand href
+name "#250"
+target "https://github.com/lierdakil/pandoc-crossref/issues/250"
+literal "false"
+
+\end_inset
+
+) ことになっているが, 今回インストールしたバージョンは LaTeX からでも一応動作するようだ.
+ 
+\end_layout
+
+\begin_layout Standard
+ただしいくつか問題がある.
+ まず, 
+\family typewriter
+pandoc-crossref
+\family default
+ の相互参照IDの命名にはルールがある.
+ 図なら 
+\family typewriter
+fig:
+\family default
+, 表なら 
+\family typewriter
+tbl:
+\family default
+, セクションタイトルなら 
+\family typewriter
+sec:
+\family default
+ と言うふうに接頭辞が必要だ.
+ これは私が LyX で使っている 
+\family typewriter
+prettyref.sty
+\family default
+ でも似たルールで採用されている.
+ しかし, こちらでは表は 
+\family typewriter
+tab:
+\family default
+ であり, 
+\family typewriter
+pandoc-crossref
+\family default
+ 側は接頭辞がハードコードされている.
+ ver.
+ 0.4 以降では自由にカスタマイズできるようにするらしい
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+https://github.com/lierdakil/pandoc-crossref/issues/200
+\end_layout
+
+\end_inset
+
+が, 今はpandoc, 
+\family typewriter
+panflute
+\family default
+ との互換性で古いバージョンを使わざるをえない.
+ そこで
+\series bold
+ハードコードにはハードコードの上書きで対処
+\series default
+した.
+ 全くスマートではないがまだ haskell がわからないので一旦これでやっていく.
+ これがオリジナルではなくフォークリポジトリを用意した理由である.
+ もう1つは LaTeX からの変換の場合, 参照IDが表示されてしまう点.
+ これは 
+\family typewriter
+panflute
+\family default
+ でその要素を除去するように修正する.
+\end_layout
+
+\begin_layout Standard
+それ以外の置き換えはさほど難しい話ではなく, 
+\family typewriter
+panflute
+\family default
+ で簡単に対処できる.
+\end_layout
+
+\begin_layout Standard
+最後に, はてなブログに画像を貼り付ける場合, よそのサイトからの直接リンク以外は「はてなフォトライフ」というサービスに投稿した画像しか使えない.
+ このサービスには Web API が用意されている
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+http://developer.hatena.ne.jp/ja/documents/fotolife/apis/atom
+\end_layout
+
+\end_inset
+
+ので, これを利用して自動でアップロードする機能も付けている.
+\end_layout
+
+\begin_layout Standard
+あとは pandoc のオプションでだいたいなんとかなる.
+ 以下のようなオプションの想定で実行している.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pandoc --mathjax --wrap=auto -f latex -t html  -F pandoc-crossref -F pandoc-cite
+proc -F hateblo-filter.py -MfigureTitle='図' -MfigPrefix='図' -MtableTitle='表'
+ -MtblPrefix='表' --bibliography=CITATIONS.bib --csl=CSL.csl -o blog/OUTPUT.html
+ INPUT.tex
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+用例
+\end_layout
+
+\begin_layout Standard
+このセクションでは上記で挙げた機能を確認する.
+\end_layout
+
+\begin_layout Standard
+はてな記法のリンクはリンク先のタイトルを取得できたり埋め込みできたりと便利である.
+ たとえば 
+\family typewriter
+[https://hogehoge:title
+\family default
+ 
+\family typewriter
+]
+\family default
+ で『
+\begin_inset CommandInset href
+LatexCommand href
+name ":title:"
+target "https://ill-identified.hatenablog.com/"
+literal "false"
+
+\end_inset
+
+』のようにタイトルを自動取得できる.
+ 
+\family typewriter
+:embed:
+\family default
+ を使えば「ブログカード」を生成する.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name ":embed:"
+target "https://ill-identified.hatenablog.com/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+pandocはデフォルトだと以下のような文中の別行立て数式を,
+\begin_inset Formula 
+\begin{align}
+\sin^{2}x+\cos^{2}x= & 1,\tag{A}\label{eq:sincos}\\
+\int_{\mathbb{R}}xdF(x;\theta)= & \mu\tag{B}\label{eq:integral}
+\end{align}
+
+\end_inset
+
+のように独立行で挿入すると改行されずインラインになってしまう.
+ 一方で明示的に改行すると段落まで改められてしまう.
+ そこで改行コードを直接挿入することにした
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+最近のバージョンはどういうルールや意図で改行の有無を決めているのかよくわからない.
+ –wrap=preserve なら SoftBreak で改行してくれるが, 一方でソースファイルで改行も何も無いところに唐突に SoftBreak
+ を挿入してしまうのでレイアウトが崩れるし, かといって none や auto にすると全然改行してくれない.
+\end_layout
+
+\end_inset
+
+.
+ また, mathjax を指定すると数式を 
+\family typewriter
+
+\backslash
+[ ...
+ 
+\backslash
+]
+\family default
+ で囲むが, はてな記法 
+\family typewriter
+[tex: ...
+ ]
+\family default
+ の方が便利なので置換している.
+\end_layout
+
+\begin_layout Standard
+引用ブロックもはてな記法が便利なので, 
+\family typewriter
+quote
+\family default
+, 
+\family typewriter
+quotation
+\family default
+, 
+\family typewriter
+epigraph
+\family default
+ 環境を変換対象とする
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+ただし, はてな記法の引用ブロックの出典にはURLを指定することしかできないため, 
+\backslash
+LaTeX との互換性は完全ではない.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Quote
+かたつぶりそろそろ登れ富士の山
+\end_layout
+
+\begin_layout Quote
+\noindent
+\align right
+小林一茶
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+
+\backslash
+texttt{epigraph}
+\family default
+で出典付き引用
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+epigraph{
+\end_layout
+
+\end_inset
+
+皆さんは最近、文中に「メキシコ」「真の男」「バンデラス」「腰抜け」などのワードが頻出する怪文書やネットミームをご覧になった事があるでしょうか？　それに伴い「逆噴
+射文体」「逆噴射先生」等の呼称を見かけて、ますます混乱した事は？　これは、逆噴射聡一郎先生のシグネチャー文章です。（あるいは、それを模倣したファンによる文体模写
+です）
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{https://diehardtales.com/n/n73ec21c8457b:title=ダイハードテイルズ所属作家紹介：逆噴射聡一郎とは？}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+相互参照
+\end_layout
+
+\begin_layout Standard
+図表のキャプションと相互参照.
+ 図 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tiger"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:tab-example"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ のように付番とアンカーリンクを自動で行う.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+a
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+o
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+b
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+o
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+ここに表のキャプション
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:tab-example"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename tiger.png
+	lyxscale 20
+	width 70text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+ここにキャプション
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tiger"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+数式参照も可能.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:sincos"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:integral"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+文献引用にも対応.
+ これらの本を表示例に選んだ理由は特にない: 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Hoshino2009"
+literal "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "yamamoto2019"
+literal "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "HastieTibshrianiFriedman2009"
+literal "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "igami2017Estimating"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+未解決事項
+\end_layout
+
+\begin_layout Itemize
+目次の配置は自動化していない.
+ pandoc の 
+\family typewriter
+-–toc
+\family default
+ オプションは 
+\family typewriter
+-s
+\family default
+ と併用しない限り意味がない.
+ しかし 
+\family typewriter
+-s
+\family default
+ では不要なヘッダが大量に作られてしまい邪魔である.
+\end_layout
+
+\begin_layout Itemize
+数式参照には数式側に 
+\family typewriter
+
+\backslash
+tag{}
+\family default
+ が必須
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+prettyref
+\family default
+/
+\family typewriter
+refstyle
+\family default
+ への対応.
+ 相互参照のときに参照IDだけ書けば十分なはずだが, 
+\family typewriter
+
+\backslash
+ref{}
+\family default
+ では「図」とか「表」とか接頭辞も毎回いちいち書く必要がある.
+ これはナンセンスなので私は LyX 上では 
+\family typewriter
+prettyref.sty
+\family default
+ の書式設定で対処している(LyX 開発者側は類似機能を持つ 
+\family typewriter
+refstyle.sty
+\family default
+ に移行したがっているが私は未対応).
+ しかし今回はまだ pandoc は 
+\family typewriter
+prettyref.sty
+\family default
+ の 
+\family typewriter
+
+\backslash
+prettyref{}
+\family default
+ に対応していない.
+\end_layout
+
+\begin_layout Itemize
+バックスラッシュで始まる TeX コマンドを平文で書くと MathJaX が暴発することがある.
+ しかしこれははてなブログが悪いのでこちらでは解決できない.
+\end_layout
+
+\begin_layout Itemize
+参考文献リストのフォーマット.
+ CSLファイルか biblatex のフォーマットを書く必要がある.
+ CSL は XML で書くので比較的簡単だが, 仕様上, 私が LaTeX でいつも使っている 
+\family typewriter
+
+\begin_inset CommandInset href
+LatexCommand href
+name "jecon.bst"
+target "https://github.com/ShiroTakeda/jecon-bst"
+literal "false"
+
+\end_inset
+
+
+\family default
+ を再現するのは難しい.
+ おそらくは biblatex で書いたほうがよそにも流用できて良さそうだが (Word を使う予定がないので CSL は全く出番がない) である.
+ あるいはフィルタとして処理を書くという方針でもできるだろうが, どちらも大変なので一旦保留.
+\end_layout
+
+\begin_layout Itemize
+せっかくAPI使うのなら投稿まで自動化してもよかったけどめんどくさくなった
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "example"
+options "jecon"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
