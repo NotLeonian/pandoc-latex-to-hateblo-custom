@@ -1,5 +1,5 @@
 #! /bin/sh
-# -o, --bibliography=, --csl=
+# -o, --bibliography=, --csl=, -M enable-upload=true/false
 execdir="`dirname $0`"
 settingsdir="${execdir}/../settings"
 filterdir="${execdir}/../filter"
