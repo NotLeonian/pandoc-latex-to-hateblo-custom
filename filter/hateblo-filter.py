@@ -4,6 +4,7 @@
 import argparse
 import os
 import sys
+import warnings
 from pathlib import Path
 import json
 import panflute as pf
@@ -136,7 +137,7 @@ def filter_hatena_image(elem, doc):
   """
   pandoc-crossref のタグを消したりはてなフォトライフにアップロードしたりはてな記法に置換したり
   """
-  enable_upload = True
+  enable_upload = doc.get_metadata('enable-upload') in ['true', '']
 
   if isinstance(elem, pf.Image):
     if enable_upload:
@@ -149,9 +150,9 @@ def filter_hatena_image(elem, doc):
         with settings_root.open('r') as f:
           params_hatenaapi = json.load(f)
       else:
-        params_hatenaapi = {k: os.environ(k) for k in ('FOTO_API_KEY', 'HATENA_USER', 'HATENA_BLOG')}
+        params_hatenaapi = {k: os.environ.get(k) for k in ('FOTO_API_KEY', 'HATENA_USER', 'HATENA_BLOG')}
       for k in ('FOTO_API_KEY', 'HATENA_USER', 'HATENA_BLOG'):
-        if not k in params_hatenaapi.keys():
+        if params_hatenaapi.get(k) is None:
           raise KeyError(f'API Parameter `{k}` not found in the settings.')
       uploader = hatena_token(**params_hatenaapi)
       uploader.post_hatenaphoto(elem.url)
