@@ -202,6 +202,8 @@ R Markdown も内部で pandoc 使ってるので\textbf{そのうち R Studio �
 pandoc の仕組みを分かっておらず\textbf{構文解析器を無から作ろうとして挫折}したり\textbf{正規表現で誤魔化し}たりしていた.
 実際には\textbf{フィルタという便利機能でだいたいなんとかなる}. ちゃんとマニュアルは読もう.
 
+なお, このエントリも LyX で書いて変換したものをそのまま投稿している. 原稿は\href{https://github.com/Gedevan-Aleksizde/pandoc-hateblo/tree/master/example}{ここ}
+
 \section{使い方}
 
 適当な場所にダウンロードしてパスを通しておく.
@@ -228,7 +230,8 @@ export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
 
 もしくは上記と同様の環境変数を設定して実行する.
 
-で, 以下のようなコマンドで変換する. \texttt{{[}...{]}} はオプション.
+で, \textbf{変換したいファイルのディレクトリに移動し} (フィルタの処理内でパスを参照するのがめんどくさくてやってないため)
+以下のようなコマンドで変換する. \texttt{{[}...{]}} はオプション.
 
 \begin{lstlisting}[language=sh]
 latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] INPUT.tex
@@ -300,7 +303,6 @@ LyX は補完機能が充実しているので, 長いコマンドを短縮名�
 \item CSSはグローバルな設定だけでなんとかする方針
 \end{itemize}
 \end{itemize}
-なお, このエントリも LyX で書いて変換したものをそのまま投稿している. 原稿は\href{https://github.com/Gedevan-Aleksizde/pandoc-hateblo/doc}{ここ}
 
 \section{やり方}
 
@@ -405,7 +407,7 @@ pandoc --mathjax -f latex -t native -o blog/intermediate.ast -F ./hateblo-filter
 あとは pandoc のオプションでだいたいなんとかなる. 以下のようなオプションの想定で実行している.
 
 \begin{lstlisting}[language=sh]
-pandoc --mathjax --wrap=auto -f latex -t html  -F pandoc-crossref -F hateblo-filter.py -MfigureTitle='図' -MfigPrefix='図' -MtableTitle='表' -MtblPrefix='表' --bibliography=CITATIONS.bib --csl=CSL.csl -o blog/OUTPUT.html INPUT.tex
+pandoc --mathjax --wrap=auto -f latex -t html  -F pandoc-crossref -F pandoc-citeproc -F hateblo-filter.py -MfigureTitle='図' -MfigPrefix='図' -MtableTitle='表' -MtblPrefix='表' --bibliography=CITATIONS.bib --csl=CSL.csl -o blog/OUTPUT.html INPUT.tex
 \end{lstlisting}
 
 
