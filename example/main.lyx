@@ -323,6 +323,20 @@ literal "false"
  ちゃんとマニュアルは読もう.
 \end_layout
 
+\begin_layout Standard
+なお, このエントリも LyX で書いて変換したものをそのまま投稿している.
+ 原稿は
+\begin_inset CommandInset href
+LatexCommand href
+name "ここ"
+target "https://github.com/Gedevan-Aleksizde/pandoc-hateblo/tree/master/example"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 使い方
 \end_layout
@@ -448,7 +462,11 @@ ZZZZ
 \end_layout
 
 \begin_layout Standard
-で, 以下のようなコマンドで変換する.
+で, 
+\series bold
+変換したいファイルのディレクトリに移動し
+\series default
+ (フィルタの処理内でパスを参照するのがめんどくさくてやってないため) 以下のようなコマンドで変換する.
  
 \family typewriter
 [...]
@@ -492,6 +510,11 @@ settings.json
 \family default
 , (3) 環境変数.
  で優先される.
+ また, 画像ファイルのアップロードをせず動作確認だけしたい場合は 
+\family typewriter
+-M enable-upload=false
+\family default
+ を追加する.
 \end_layout
 
 \begin_layout Section
@@ -796,20 +819,6 @@ CSSはグローバルな設定だけでなんとかする方針
 \end_layout
 
 \end_deeper
-\begin_layout Standard
-なお, このエントリも LyX で書いて変換したものをそのまま投稿している.
- 原稿は
-\begin_inset CommandInset href
-LatexCommand href
-name "ここ"
-target "https://github.com/Gedevan-Aleksizde/pandoc-hateblo/doc"
-literal "false"
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 やり方
 \end_layout
