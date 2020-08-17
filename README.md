@@ -43,7 +43,7 @@ export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
 
 ## 使い方
 
-以下のようなコマンドで変換する. [...] はオプション. ただし現時点では変換対象ファイルのディレクトリで実行
+以下のようなコマンドで変換する. [...] はオプション. ただし現時点では**変換対象ファイルのディレクトリで実行する前提**
 
 ```
 latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] INPUT.tex
