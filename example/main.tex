@@ -138,7 +138,9 @@
   \newrefformat{figb}{\pageref{#1} ページの図 \ref{#1}}%
 }{}
 % ------
-\usepackage{epigraph}
+\usepackage{epigraph, varwidth}
+\renewcommand{\epigraphsize}{\small}
+\setlength{\epigraphwidth}{0.9\textwidth}
 
 \makeatother
 
@@ -183,7 +185,7 @@ showstringspaces=true}
 
 \section*{概要}
 
-最近はてなブログの更新がめんどくさくなってきたので効率化をはかる. 一部の要素をはてな記法に変換し, texファイルからはてな記法対応
+最近, というか結構前からはてなブログの更新がめんどくさくなってきたので効率化をはかる. 一部の要素をはてな記法に変換し, texファイルからはてな記法対応
 html を生成するフィルタを作ってみた.
 
 R Markdown も内部で pandoc 使ってるので\textbf{そのうち R Studio から直接はてなブログに投稿できるようになる}……かもしれない
@@ -206,18 +208,47 @@ pandoc の仕組みを分かっておらず\textbf{構文解析器を無から�
 
 \section{使い方}
 
+\subsection{インストール}
+
+インストール方法がやや込み入っている. まずは pandoc を用意する. Ubuntu のレポジトリだとバージョンが少し古いので
+\href{https://github.com/jgm/pandoc/releases}{github} で \texttt{.deb}
+を落としてきてインストールする. 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1 を使用した. このへんバージョン制約が多いみたいなので注意.
+Pandoc 2.9.2.1 に対応する \texttt{\href{https://github.com/lierdakil/pandoc-crossref}{pandoc-crossref}}
+の最新バージョンは 0.3.6.4 だが, これを少しだけいじったやつを使う (理由は後述). \texttt{stack} のほうは
+ver. 2.3.3
+
+\begin{lstlisting}[language=sh]
+git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
+cd pandoc-crossref
+git checkout 4e02b07
+stack clean
+stack build
+stack install
+\end{lstlisting}
+
+さらに \href{https://github.com/sky-y/pandoc-hateblo}{pandoc-hateblo }
+というのを作ってる人がいたのでフォークしてみたが「見出しを \texttt{h3} タグに変える」という機能だけ作って数年前から止まっていいる.
+しかも私はまだ haskell がよく分かっていないので, \href{https://pandoc.org/filters.html}{フィルタに関する公式ガイド}から辿って見つけた
+Python の \texttt{\href{http://scorreia.com/software/panflute/}{panflute}}
+を使うことにした\footnote{内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から \texttt{–to} フォーマットへ変換,
+という順にパイプラインで実行されているのでフィルタはコマンドラインの標準入出力を操作できるスクリプトならなんでも良いらしい. そのうちでも
+Haskell か Lua で書いたほうが良いらしいが, 今回はどちらも構文を覚える時間が惜しかったので使わなかった. Haskell
+はそのうち覚えたいが……}. その結果, オリジナルとは全く別物になった. なお pandoc を 2.9にしたのは \texttt{panflute} が対応していない\footnote{https://github.com/sergiocorreia/panflute/issues/142}ためなので,
+この問題が解決されればもう少し簡単になる.
+
 適当な場所にダウンロードしてパスを通しておく.
 
 \href{https://github.com/Gedevan-Aleksizde/pandoc-hateblo}{:embed:}
 
-\begin{lstlisting}
+\begin{lstlisting}[language=sh]
 git clone git@github.com:Gedevan-Aleksizde/pandoc-hateblo.git
 git checkout hatena-filter
 export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
 \end{lstlisting}
 
 フォトライフのAPIキーを取得して, 設定ファイル \texttt{settings.json} に書き込んでおく. \texttt{blog\_name}
-は人によっては違う形式になるはず. \texttt{FOTO\_FOLDER} は画像のアップロード先.
+は人によっては違う形式になるはず. \texttt{FOTO\_FOLDER} は画像をアップロードしたいフォルダ. 未設定の場合は
+\texttt{Hatena Blog} になる
 
 \begin{lstlisting}[language=json]
 {
@@ -228,17 +259,20 @@ export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
 }
 \end{lstlisting}
 
-もしくは上記と同様の環境変数を設定して実行する.
+もしくは実行時に上記と同様の環境変数を設定する.
 
-で, \textbf{変換したいファイルのディレクトリに移動し} (フィルタの処理内でパスを参照するのがめんどくさくてやってないため)
-以下のようなコマンドで変換する. \texttt{{[}...{]}} はオプション.
+\subsection{コマンド}
+
+\textbf{変換したいファイルのディレクトリに移動し} (フィルタの処理内でパスを参照するのがめんどくさくてやってないため) 以下のようなコマンドで変換する.
+\texttt{{[}...{]}} はオプション.
 
 \begin{lstlisting}[language=sh]
-latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] INPUT.tex
+latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] [-o OUT.html]  INPUT.tex
 \end{lstlisting}
 
 複数ある場合 (1) カレントディレクトリの \texttt{settings.json}, (2) \texttt{hatena-filter/settings}
-\texttt{/} の \texttt{settings.json}, (3) 環境変数. で優先される.
+\texttt{/} の \texttt{settings.json}, (3) 環境変数. で優先される. また, 画像ファイルのアップロードをせず動作確認だけしたい場合は
+\texttt{-M enable-upload=false} という引数を追加する. また, \texttt{-o ...} を省略すると標準出力に出る.
 
 \section{やりたいこと}
 
@@ -304,43 +338,21 @@ LyX は補完機能が充実しているので, 長いコマンドを短縮名�
 \end{itemize}
 \end{itemize}
 
-\section{やり方}
+\section{解説}
 
-\subsection{インストール}
+\subsection{pandoc の内部処理の簡単な説明}
 
-まずは pandoc を用意する. Ubuntu のレポジトリだとバージョンが少し古いので \href{https://github.com/jgm/pandoc/releases}{github}
-で \texttt{.deb} を落としてきてインストールする. 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1
-を使用した. このへんバージョン制約が多いみたいなので注意. Pandoc 2.9.2.1 に対応する \texttt{\href{https://github.com/lierdakil/pandoc-crossref}{pandoc-crossref}}
-の最新バージョンは 3.6.4 だが, これを少しだけいじったやつを使う (理由は後述). \texttt{stack} のほうは
-ver. 2.3.3
+このセクションの話はほぼ Pandoc の\href{https://pandoc.org/filters.html}{公式ドキュメント}
+と Panflute の\href{http://scorreia.com/software/panflute/guide.html}{公式ガイド}に書いてあることに基づく.
 
-\begin{lstlisting}[language=sh]
-git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
-cd pandoc-crossref
-git checkout 4e02b07
-stack clean
-stack build
-stack install
-\end{lstlisting}
-
-さらに \href{https://github.com/sky-y/pandoc-hateblo}{pandoc-hateblo }
-というのを作ってる人がいたのでフォークしてみたが「見出しを \texttt{h3} タグに変える」という機能だけ作って数年前から止まっていいる.
-しかも私はまだ haskell がよく分かっていないので, \href{https://pandoc.org/filters.html}{フィルタに関する公式ガイド}から辿って見つけた
-Python の \texttt{\href{http://scorreia.com/software/panflute/}{panflute}}
-を使うことにした\footnote{内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から \texttt{–to} フォーマットへ変換,
-という順にパイプラインで実行されているのでフィルタはコマンドラインの標準入出力を操作できるスクリプトならなんでも良いらしい. そのうちでも
-Haskell か Lua で書いたほうが良いらしいが, 今回はどちらも構文を覚える時間が惜しかったので使わなかった. Haskell
-はそのうち覚えたいが……}. その結果, オリジナルとは全く別物になった. なお pandoc を 2.9にしたのは \texttt{panflute} が対応していない\footnote{https://github.com/sergiocorreia/panflute/issues/142}ため.
-
-\href{https://github.com/Gedevan-Aleksizde/pandoc-hateblo}{:embed:}
-
-\subsection{pandoc の処理の概要}
-
-pandoc の内部での処理フローは, (1) ソースを解析する (2) 中間ファイルとして抽象構文木に変換する (3) 指定したフォーマットに再変換する,
-という処理をしており, フィルタは (2) の抽象構文木を修正する処理のことになる\footnote{https://pandoc.org/filters.html}.
+pandoc の内部での処理フローは, (1) ソースを解析する (2) 中間ファイルとして\textbf{抽象構文木} (ast)
+に変換する (3) 指定したフォーマットに再変換する, という処理をしており, フィルタは (2) の抽象構文木を修正する処理のことになる\footnote{https://pandoc.org/filters.html}.
 なお中間ファイルは json 形式でも表現できるので, 多くの言語では json 前提で書いたほうが楽かもしれないが, Python
 には \texttt{pandocfilters} と \texttt{panflute} という2種類のpandocフィルタ用モジュールがある.
 今回は \texttt{panflute} を使ってみた.
+
+Ast の詳細なドキュメントはまだない\footnote{https://github.com/jgm/pandoc/issues/3262}ため,
+以下は私の解釈であり, 多少語弊があるかもしれない. しかし少なくともこの解釈を前提にこのフィルタを作っている.
 
 \texttt{.ast} ファイルに記述される抽象構文木の最小単位 (element) の書式は\texttt{}
 \begin{lstlisting}
@@ -350,18 +362,18 @@ pandoc の内部での処理フローは, (1) ソースを解析する (2) 中�
 (文字列) とか \texttt{Link} (ハイパーリンク) とか,\texttt{ \textless attributes\textgreater}
 は省略可能. 書式はパーレンで括ったリストになる.
 
-\texttt{}
 \begin{lstlisting}
-("", [], [("<key>", "<value>"), (...)])
+("<id>", [<class>], [("<key>", "<value>"), (...)])
 \end{lstlisting}
-\texttt{panflute} では, \texttt{.format}, \texttt{\textless element\textgreater .attributes}
-でアクセスできる. \texttt{collections.OrderedDict} 型. ただし平文 (\texttt{Str}
-など) にはこの属性はない.\texttt{ \textless content\textgreater} には (1) ダブルクオーテーションで括った文字列,
-(2) 構文木の入れ子, (3) それらを \texttt{{[}}, \texttt{{]}}で括ったリスト, のどれかを与えられる.
-\texttt{ELEM.content} でアクセスできる. これは \texttt{list} 型.
 
-構文木入れ子の最上層の型は \texttt{Pandoc} であり, \texttt{\textless attributes\textgreater}
-にメタ情報が入っている. ただしこれは \texttt{doc.get\_metadata()} でアクセスする.
+それぞれ HTML タグの ID, クラス, それ以外のスタイルや属性, になる.\texttt{ panflute} では, \texttt{\textless element\textgreater .identifier},
+\texttt{\textless element\textgreater .classes}, \texttt{\textless element\textgreater .attributes}
+でアクセスできる. 属性は \texttt{collections.OrderedDict} 型で, 平文 (\texttt{Str})
+など属性を持たないタグもある.\texttt{ \textless content\textgreater} には \texttt{\textless element\textgreater .content}
+でアクセスできる. この中には (1) ダブルクオーテーションで括った文字列, (2) 構文木の入れ子, (3) それらを \texttt{{[}},
+\texttt{{]}}で括ったリスト, のどれかを与えられる. 構文木入れ子の最上層の型は \texttt{Pandoc} であり,
+\texttt{\textless attributes\textgreater} にメタ情報が入っている. ただし \texttt{panflute}
+ではこれは他のタグとは違う特別扱いで, \texttt{doc.get\_metadata()} でアクセスする.
 
 \subsection{作った処理}
 
@@ -485,11 +497,12 @@ LyX 上では \texttt{prettyref.sty} の書式設定で対処している(LyX �
 に移行したがっているが私は未対応). しかし今回はまだ pandoc は \texttt{prettyref.sty} の \texttt{\textbackslash prettyref\{\}}
 に対応していない.
 \item バックスラッシュで始まる TeX コマンドを平文で書くと MathJaX が暴発することがある. しかしこれははてなブログが悪いのでこちらでは解決できない.
-\item 参考文献リストのフォーマット. CSLファイルか biblatex のフォーマットを書く必要がある. CSL は XML で書くので比較的簡単だが,
+\item 参考文献リストのフォーマット. CSLファイルか BibLaTeX のフォーマットを書く必要がある. CSL は XML で書くので比較的簡単だが,
 仕様上, 私が LaTeX でいつも使っている \texttt{\href{https://github.com/ShiroTakeda/jecon-bst}{jecon.bst}}
-を再現するのは難しい. おそらくは biblatex で書いたほうがよそにも流用できて良さそうだが (Word を使う予定がないので
-CSL は全く出番がない) である. あるいはフィルタとして処理を書くという方針でもできるだろうが, どちらも大変なので一旦保留.
+を再現するのは難しい. おそらくは BibLaTeX で書いたほうがよそにも流用できて良さそうで (Word を使う予定がないので
+CSL は全く出番がない), あるいはフィルタとして処理を書くという方針でもできるだろうが, どちらも大変なので一旦保留.
 \item せっかくAPI使うのなら投稿まで自動化してもよかったけどめんどくさくなった
+\item 参考文献がAmazonにあるなら, リンクを自動で追加したい
 \end{itemize}
 \bibliographystyle{jecon}
 \bibliography{example}
