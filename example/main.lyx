@@ -117,7 +117,9 @@
   \newrefformat{figb}{\pageref{#1} ページの図 \ref{#1}}%
 }{}
 % ------
-\usepackage{epigraph}
+\usepackage{epigraph, varwidth}
+\renewcommand{\epigraphsize}{\small}
+\setlength{\epigraphwidth}{0.9\textwidth}
 \end_preamble
 \use_default_options false
 \begin_modules
@@ -249,7 +251,7 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Standard
-最近はてなブログの更新がめんどくさくなってきたので効率化をはかる.
+最近, というか結構前からはてなブログの更新がめんどくさくなってきたので効率化をはかる.
  一部の要素をはてな記法に変換し, texファイルからはてな記法対応 html を生成するフィルタを作ってみた.
 \end_layout
 
@@ -341,6 +343,164 @@ literal "false"
 使い方
 \end_layout
 
+\begin_layout Subsection
+インストール
+\end_layout
+
+\begin_layout Standard
+インストール方法がやや込み入っている.
+ まずは pandoc を用意する.
+ Ubuntu のレポジトリだとバージョンが少し古いので 
+\begin_inset CommandInset href
+LatexCommand href
+name "github"
+target "https://github.com/jgm/pandoc/releases"
+literal "false"
+
+\end_inset
+
+ で 
+\family typewriter
+.deb
+\family default
+ を落としてきてインストールする.
+ 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1 を使用した.
+ このへんバージョン制約が多いみたいなので注意.
+ Pandoc 2.9.2.1 に対応する 
+\family typewriter
+
+\begin_inset CommandInset href
+LatexCommand href
+name "pandoc-crossref"
+target "https://github.com/lierdakil/pandoc-crossref"
+literal "false"
+
+\end_inset
+
+
+\family default
+ の最新バージョンは 0.3.6.4 だが, これを少しだけいじったやつを使う (理由は後述).
+ 
+\family typewriter
+stack
+\family default
+ のほうは ver.
+ 2.3.3
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
+\end_layout
+
+\begin_layout Plain Layout
+
+cd pandoc-crossref
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout 4e02b07
+\end_layout
+
+\begin_layout Plain Layout
+
+stack clean
+\end_layout
+
+\begin_layout Plain Layout
+
+stack build
+\end_layout
+
+\begin_layout Plain Layout
+
+stack install
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+さらに 
+\begin_inset CommandInset href
+LatexCommand href
+name "pandoc-hateblo "
+target "https://github.com/sky-y/pandoc-hateblo"
+literal "false"
+
+\end_inset
+
+ というのを作ってる人がいたのでフォークしてみたが「見出しを 
+\family typewriter
+h3
+\family default
+ タグに変える」という機能だけ作って数年前から止まっていいる.
+ しかも私はまだ haskell がよく分かっていないので, 
+\begin_inset CommandInset href
+LatexCommand href
+name "フィルタに関する公式ガイド"
+target "https://pandoc.org/filters.html"
+literal "false"
+
+\end_inset
+
+から辿って見つけた Python の 
+\family typewriter
+
+\begin_inset CommandInset href
+LatexCommand href
+name "panflute"
+target "http://scorreia.com/software/panflute/"
+literal "false"
+
+\end_inset
+
+
+\family default
+ を使うことにした
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から 
+\family typewriter
+–to
+\family default
+ フォーマットへ変換, という順にパイプラインで実行されているのでフィルタはコマンドラインの標準入出力を操作できるスクリプトならなんでも良いらしい.
+ そのうちでも Haskell か Lua で書いたほうが良いらしいが, 今回はどちらも構文を覚える時間が惜しかったので使わなかった.
+ Haskell はそのうち覚えたいが……
+\end_layout
+
+\end_inset
+
+.
+ その結果, オリジナルとは全く別物になった.
+ なお pandoc を 2.9にしたのは 
+\family typewriter
+panflute
+\family default
+ が対応していない
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+https://github.com/sergiocorreia/panflute/issues/142
+\end_layout
+
+\end_inset
+
+ためなので, この問題が解決されればもう少し簡単になる.
+\end_layout
+
 \begin_layout Standard
 適当な場所にダウンロードしてパスを通しておく.
 \end_layout
@@ -359,6 +519,7 @@ literal "false"
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "language=sh"
 inline false
 status open
 
@@ -397,7 +558,12 @@ blog_name
 \family typewriter
 FOTO_FOLDER
 \family default
- は画像のアップロード先.
+ は画像をアップロードしたいフォルダ.
+ 未設定の場合は 
+\family typewriter
+Hatena Blog
+\family default
+ になる
 \end_layout
 
 \begin_layout Standard
@@ -458,11 +624,15 @@ ZZZZ
 \end_layout
 
 \begin_layout Standard
-もしくは上記と同様の環境変数を設定して実行する.
+もしくは実行時に上記と同様の環境変数を設定する.
+\end_layout
+
+\begin_layout Subsection
+コマンド
 \end_layout
 
 \begin_layout Standard
-で, 
+
 \series bold
 変換したいファイルのディレクトリに移動し
 \series default
@@ -483,7 +653,7 @@ status open
 \begin_layout Plain Layout
 
 latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl]
- INPUT.tex
+ [-o OUT.html]  INPUT.tex
 \end_layout
 
 \end_inset
@@ -514,7 +684,13 @@ settings.json
 \family typewriter
 -M enable-upload=false
 \family default
- を追加する.
+ という引数を追加する.
+ また, 
+\family typewriter
+-o ...
+
+\family default
+ を省略すると標準出力に出る.
 \end_layout
 
 \begin_layout Section
@@ -820,185 +996,41 @@ CSSはグローバルな設定だけでなんとかする方針
 
 \end_deeper
 \begin_layout Section
-やり方
+解説
 \end_layout
 
 \begin_layout Subsection
-インストール
+pandoc の内部処理の簡単な説明
 \end_layout
 
 \begin_layout Standard
-まずは pandoc を用意する.
- Ubuntu のレポジトリだとバージョンが少し古いので 
+このセクションの話はほぼ Pandoc の
 \begin_inset CommandInset href
 LatexCommand href
-name "github"
-target "https://github.com/jgm/pandoc/releases"
-literal "false"
-
-\end_inset
-
- で 
-\family typewriter
-.deb
-\family default
- を落としてきてインストールする.
- 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1 を使用した.
- このへんバージョン制約が多いみたいなので注意.
- Pandoc 2.9.2.1 に対応する 
-\family typewriter
-
-\begin_inset CommandInset href
-LatexCommand href
-name "pandoc-crossref"
-target "https://github.com/lierdakil/pandoc-crossref"
-literal "false"
-
-\end_inset
-
-
-\family default
- の最新バージョンは 3.6.4 だが, これを少しだけいじったやつを使う (理由は後述).
- 
-\family typewriter
-stack
-\family default
- のほうは ver.
- 2.3.3
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-lstparams "language=sh"
-inline false
-status open
-
-\begin_layout Plain Layout
-
-git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
-\end_layout
-
-\begin_layout Plain Layout
-
-cd pandoc-crossref
-\end_layout
-
-\begin_layout Plain Layout
-
-git checkout 4e02b07
-\end_layout
-
-\begin_layout Plain Layout
-
-stack clean
-\end_layout
-
-\begin_layout Plain Layout
-
-stack build
-\end_layout
-
-\begin_layout Plain Layout
-
-stack install
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-さらに 
-\begin_inset CommandInset href
-LatexCommand href
-name "pandoc-hateblo "
-target "https://github.com/sky-y/pandoc-hateblo"
-literal "false"
-
-\end_inset
-
- というのを作ってる人がいたのでフォークしてみたが「見出しを 
-\family typewriter
-h3
-\family default
- タグに変える」という機能だけ作って数年前から止まっていいる.
- しかも私はまだ haskell がよく分かっていないので, 
-\begin_inset CommandInset href
-LatexCommand href
-name "フィルタに関する公式ガイド"
+name "公式ドキュメント"
 target "https://pandoc.org/filters.html"
 literal "false"
 
 \end_inset
 
-から辿って見つけた Python の 
-\family typewriter
-
+ と Panflute の
 \begin_inset CommandInset href
 LatexCommand href
-name "panflute"
-target "http://scorreia.com/software/panflute/"
+name "公式ガイド"
+target "http://scorreia.com/software/panflute/guide.html"
 literal "false"
 
 \end_inset
 
-
-\family default
- を使うことにした
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から 
-\family typewriter
-–to
-\family default
- フォーマットへ変換, という順にパイプラインで実行されているのでフィルタはコマンドラインの標準入出力を操作できるスクリプトならなんでも良いらしい.
- そのうちでも Haskell か Lua で書いたほうが良いらしいが, 今回はどちらも構文を覚える時間が惜しかったので使わなかった.
- Haskell はそのうち覚えたいが……
-\end_layout
-
-\end_inset
-
-.
- その結果, オリジナルとは全く別物になった.
- なお pandoc を 2.9にしたのは 
-\family typewriter
-panflute
-\family default
- が対応していない
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-https://github.com/sergiocorreia/panflute/issues/142
-\end_layout
-
-\end_inset
-
-ため.
+に書いてあることに基づく.
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset href
-LatexCommand href
-name ":embed:"
-target "https://github.com/Gedevan-Aleksizde/pandoc-hateblo"
-literal "false"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-pandoc の処理の概要
-\end_layout
-
-\begin_layout Standard
-pandoc の内部での処理フローは, (1) ソースを解析する (2) 中間ファイルとして抽象構文木に変換する (3) 指定したフォーマットに再変換する,
- という処理をしており, フィルタは (2) の抽象構文木を修正する処理のことになる
+pandoc の内部での処理フローは, (1) ソースを解析する (2) 中間ファイルとして
+\series bold
+抽象構文木
+\series default
+ (ast) に変換する (3) 指定したフォーマットに再変換する, という処理をしており, フィルタは (2) の抽象構文木を修正する処理のことになる
 \begin_inset Foot
 status collapsed
 
@@ -1023,6 +1055,21 @@ panflute
 panflute
 \family default
  を使ってみた.
+\end_layout
+
+\begin_layout Standard
+Ast の詳細なドキュメントはまだない
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+https://github.com/jgm/pandoc/issues/3262
+\end_layout
+
+\end_inset
+
+ため, 以下は私の解釈であり, 多少語弊があるかもしれない.
+ しかし少なくともこの解釈を前提にこのフィルタを作っている.
 \end_layout
 
 \begin_layout Standard
@@ -1068,8 +1115,6 @@ Link
 \end_layout
 
 \begin_layout Standard
-
-\family typewriter
 \begin_inset listings
 inline false
 status open
@@ -1080,11 +1125,11 @@ status open
 \begin_inset Quotes eld
 \end_inset
 
-
+<id>
 \begin_inset Quotes erd
 \end_inset
 
-, [], [(
+, [<class>], [(
 \begin_inset Quotes eld
 \end_inset
 
@@ -1105,32 +1150,47 @@ status open
 
 \end_inset
 
-panflute
+
+\end_layout
+
+\begin_layout Standard
+それぞれ HTML タグの ID, クラス, それ以外のスタイルや属性, になる.
+
+\family typewriter
+ panflute
 \family default
  では, 
 \family typewriter
-.format
+<element>.identifier
+\family default
+, 
+\family typewriter
+<element>.classes
 \family default
 , 
 \family typewriter
 <element>.attributes
 \family default
  でアクセスできる.
- 
+ 属性は 
 \family typewriter
 collections.OrderedDict
 \family default
- 型.
- ただし平文 (
+ 型で, 平文 (
 \family typewriter
 Str
 \family default
- など) にはこの属性はない.
+) など属性を持たないタグもある.
 
 \family typewriter
  <content>
 \family default
- には (1) ダブルクオーテーションで括った文字列, (2) 構文木の入れ子, (3) それらを 
+ には 
+\family typewriter
+<element>.content
+\family default
+ でアクセスできる.
+ この中には (1) ダブルクオーテーションで括った文字列, (2) 構文木の入れ子, (3) それらを 
 \family typewriter
 [
 \family default
@@ -1139,20 +1199,7 @@ Str
 ]
 \family default
 で括ったリスト, のどれかを与えられる.
- 
-\family typewriter
-ELEM.content
-\family default
- でアクセスできる.
- これは 
-\family typewriter
-list
-\family default
- 型.
-\end_layout
-
-\begin_layout Standard
-構文木入れ子の最上層の型は 
+ 構文木入れ子の最上層の型は 
 \family typewriter
 Pandoc
 \family default
@@ -1161,7 +1208,11 @@ Pandoc
 <attributes>
 \family default
  にメタ情報が入っている.
- ただしこれは 
+ ただし 
+\family typewriter
+panflute
+\family default
+ ではこれは他のタグとは違う特別扱いで, 
 \family typewriter
 doc.get_metadata()
 \family default
@@ -1921,7 +1972,7 @@ prettyref{}
 
 \begin_layout Itemize
 参考文献リストのフォーマット.
- CSLファイルか biblatex のフォーマットを書く必要がある.
+ CSLファイルか BibLaTeX のフォーマットを書く必要がある.
  CSL は XML で書くので比較的簡単だが, 仕様上, 私が LaTeX でいつも使っている 
 \family typewriter
 
@@ -1936,12 +1987,16 @@ literal "false"
 
 \family default
  を再現するのは難しい.
- おそらくは biblatex で書いたほうがよそにも流用できて良さそうだが (Word を使う予定がないので CSL は全く出番がない) である.
- あるいはフィルタとして処理を書くという方針でもできるだろうが, どちらも大変なので一旦保留.
+ おそらくは BibLaTeX で書いたほうがよそにも流用できて良さそうで (Word を使う予定がないので CSL は全く出番がない), あるいはフィルタとし
+て処理を書くという方針でもできるだろうが, どちらも大変なので一旦保留.
 \end_layout
 
 \begin_layout Itemize
 せっかくAPI使うのなら投稿まで自動化してもよかったけどめんどくさくなった
+\end_layout
+
+\begin_layout Itemize
+参考文献がAmazonにあるなら, リンクを自動で追加したい
 \end_layout
 
 \begin_layout Standard
