@@ -137,7 +137,9 @@ def filter_hatena_image(elem, doc):
   """
   pandoc-crossref のタグを消したりはてなフォトライフにアップロードしたりはてな記法に置換したり
   """
-  enable_upload = doc.get_metadata('enable-upload') in ['true', '']
+  enable_upload = doc.get_metadata('enable-upload')
+  if not enable_upload:
+    enable_upload = True
 
   if isinstance(elem, pf.Image):
     if enable_upload:
