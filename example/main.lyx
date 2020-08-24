@@ -260,7 +260,25 @@ R Markdown も内部で pandoc 使ってるので
 \series bold
 そのうち R Studio から直接はてなブログに投稿できるようになる
 \series default
-……かもしれない
+……かもしれない.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+この投稿の本文も texファイルから変換したものに一切手を加えていない
+\series default
+.
+ 原稿は
+\begin_inset CommandInset href
+LatexCommand href
+name "ここ"
+target "https://github.com/Gedevan-Aleksizde/pandoc-hateblo/tree/master/example"
+literal "false"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -325,20 +343,6 @@ literal "false"
  ちゃんとマニュアルは読もう.
 \end_layout
 
-\begin_layout Standard
-なお, このエントリも LyX で書いて変換したものをそのまま投稿している.
- 原稿は
-\begin_inset CommandInset href
-LatexCommand href
-name "ここ"
-target "https://github.com/Gedevan-Aleksizde/pandoc-hateblo/tree/master/example"
-literal "false"
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 使い方
 \end_layout
@@ -379,7 +383,7 @@ literal "false"
 
 
 \family default
- の最新バージョンは 0.3.6.4 だが, これを少しだけいじったやつを使う (理由は後述).
+ の最新バージョンは 0.3.6.4 だが, これを少しだけいじったやつを使う.
  
 \family typewriter
 stack

@@ -1,6 +1,7 @@
 <h2 class="unnumbered" id="概要">概要</h2>
 <p>最近, というか結構前からはてなブログの更新がめんどくさくなってきたので効率化をはかる. 一部の要素をはてな記法に変換し, texファイルからはてな記法対応 html を生成するフィルタを作ってみた.</p>
-<p>R Markdown も内部で pandoc 使ってるので<strong>そのうち R Studio から直接はてなブログに投稿できるようになる</strong>……かもしれない</p>
+<p>R Markdown も内部で pandoc 使ってるので<strong>そのうち R Studio から直接はてなブログに投稿できるようになる</strong>……かもしれない.</p>
+<p><strong>この投稿の本文も texファイルから変換したものに一切手を加えていない</strong>. 原稿は[https://github.com/Gedevan-Aleksizde/pandoc-hateblo/tree/master/example:title=ここ]</p>
 <p>おおまかな機能は以下の通り.</p>
 <ul>
 <li><p>LaTeX コードを html + はてな記法に変換する</p>
@@ -11,10 +12,9 @@
 <li><p>参照している画像ファイルをはてなフォトライフに自動アップロードする</p></li>
 </ul>
 <p>大昔に[https://ill-identified.hatenablog.com/entry/2015/02/24/230057:title=texファイルをはてなブログ用に変換するスクリプトを書いた]時は pandoc の仕組みを分かっておらず<strong>構文解析器を無から作ろうとして挫折</strong>したり<strong>正規表現で誤魔化し</strong>たりしていた. 実際には<strong>フィルタという便利機能でだいたいなんとかなる</strong>. ちゃんとマニュアルは読もう.</p>
-<p>なお, このエントリも LyX で書いて変換したものをそのまま投稿している. 原稿は[https://github.com/Gedevan-Aleksizde/pandoc-hateblo/tree/master/example:title=ここ]</p>
 <h2 id="使い方">使い方</h2>
 <h3 id="インストール">インストール</h3>
-<p>インストール方法がやや込み入っている. まずは pandoc を用意する. Ubuntu のレポジトリだとバージョンが少し古いので [https://github.com/jgm/pandoc/releases:title=github] で <code>.deb</code> を落としてきてインストールする. 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1 を使用した. このへんバージョン制約が多いみたいなので注意. Pandoc 2.9.2.1 に対応する <code>pandoc-crossref</code> の最新バージョンは 0.3.6.4 だが, これを少しだけいじったやつを使う (理由は後述). <code>stack</code> のほうは ver. 2.3.3</p>
+<p>インストール方法がやや込み入っている. まずは pandoc を用意する. Ubuntu のレポジトリだとバージョンが少し古いので [https://github.com/jgm/pandoc/releases:title=github] で <code>.deb</code> を落としてきてインストールする. 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1 を使用した. このへんバージョン制約が多いみたいなので注意. Pandoc 2.9.2.1 に対応する <code>pandoc-crossref</code> の最新バージョンは 0.3.6.4 だが, これを少しだけいじったやつを使う. <code>stack</code> のほうは ver. 2.3.3</p>
 >|sh|
 git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
 cd pandoc-crossref
@@ -172,7 +172,7 @@ pandoc --mathjax --wrap=auto -f latex -t html  -F pandoc-crossref -F pandoc-cite
 </table>
 </div>
 <p>
-><figure class="figure-image figure-image-fotolife" title="図 1: ここにキャプション"><figcaption id="fig:tiger">図 1: ここにキャプション</figcaption>[f:id:ill-identified:20200824125354p:plain]</figure><
+><figure class="figure-image figure-image-fotolife" title="図 1: ここにキャプション"><figcaption id="fig:tiger">図 1: ここにキャプション</figcaption>[f:id:ill-identified:20200824131648p:plain]</figure><
 </p>
 <p>数式参照も可能. <span data-reference-type="ref" data-reference="eq:sincos">(\ref{eq:sincos})</span>, <span data-reference-type="ref" data-reference="eq:integral">(\ref{eq:integral})</span></p>
 <p>文献引用にも対応. これらの本を表示例に選んだ理由は特にない: <span class="citation" data-cites="Hoshino2009">星野 (<a href="#ref-Hoshino2009" role="doc-biblioref">2009</a>)</span>, <span class="citation" data-cites="yamamoto2019">山本 (<a href="#ref-yamamoto2019" role="doc-biblioref">2019</a>)</span>, <span class="citation" data-cites="HastieTibshrianiFriedman2009">Hastie, Tibshriani, and Friedman (<a href="#ref-HastieTibshrianiFriedman2009" role="doc-biblioref">2009</a>)</span>, <span class="citation" data-cites="igami2017Estimating">Igami (<a href="#ref-igami2017Estimating" role="doc-biblioref">2017</a>)</span></p>
