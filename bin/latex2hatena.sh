@@ -1,4 +1,4 @@
-#! /usr/bin/sh
+#! /bin/sh
 # -o, --bibliography=, --csl=, -M enable-upload=true/false
 execdir="`dirname $0`"
 settingsdir="${execdir}/../settings"
