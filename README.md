@@ -34,7 +34,7 @@ git checkout hatena-filter
 export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
 ```
 
-4. はてなフォトライフのAPIキーを取得して, 設定ファイル `settings.json` に書き込んでおく. `blog_name` は人によっては違う形式になるはず. `FOTO_FOLDER` は画像のアップロード先.
+4. はてなフォトライフのAPIキーを取得して, 設定ファイル `settings.json` に書き込んでおく. `HATENA_BLOG` は人によっては違う形式になるはず. `FOTO_FOLDER` は画像のアップロード先.
 
 ```
 {
