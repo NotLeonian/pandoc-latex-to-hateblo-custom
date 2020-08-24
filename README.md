@@ -61,3 +61,10 @@ export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
 ```
 latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] INPUT.tex
 ```
+
+
+## 使用例
+
+以下の投稿と [`expample`](example/) にある `main.tex`, `main.pdf` を比較してみてください.
+
+https://ill-identified.hatenablog.com/entry/2020/08/24/132209
