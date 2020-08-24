@@ -1,5 +1,5 @@
 <h2 class="unnumbered" id="概要">概要</h2>
-<p>最近はてなブログの更新がめんどくさくなってきたので効率化をはかる. 一部の要素をはてな記法に変換し, texファイルからはてな記法対応 html を生成するフィルタを作ってみた.</p>
+<p>最近, というか結構前からはてなブログの更新がめんどくさくなってきたので効率化をはかる. 一部の要素をはてな記法に変換し, texファイルからはてな記法対応 html を生成するフィルタを作ってみた.</p>
 <p>R Markdown も内部で pandoc 使ってるので<strong>そのうち R Studio から直接はてなブログに投稿できるようになる</strong>……かもしれない</p>
 <p>おおまかな機能は以下の通り.</p>
 <ul>
@@ -13,14 +13,25 @@
 <p>大昔に[https://ill-identified.hatenablog.com/entry/2015/02/24/230057:title=texファイルをはてなブログ用に変換するスクリプトを書いた]時は pandoc の仕組みを分かっておらず<strong>構文解析器を無から作ろうとして挫折</strong>したり<strong>正規表現で誤魔化し</strong>たりしていた. 実際には<strong>フィルタという便利機能でだいたいなんとかなる</strong>. ちゃんとマニュアルは読もう.</p>
 <p>なお, このエントリも LyX で書いて変換したものをそのまま投稿している. 原稿は[https://github.com/Gedevan-Aleksizde/pandoc-hateblo/tree/master/example:title=ここ]</p>
 <h2 id="使い方">使い方</h2>
+<h3 id="インストール">インストール</h3>
+<p>インストール方法がやや込み入っている. まずは pandoc を用意する. Ubuntu のレポジトリだとバージョンが少し古いので [https://github.com/jgm/pandoc/releases:title=github] で <code>.deb</code> を落としてきてインストールする. 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1 を使用した. このへんバージョン制約が多いみたいなので注意. Pandoc 2.9.2.1 に対応する <code>pandoc-crossref</code> の最新バージョンは 0.3.6.4 だが, これを少しだけいじったやつを使う (理由は後述). <code>stack</code> のほうは ver. 2.3.3</p>
+>|sh|
+git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
+cd pandoc-crossref
+git checkout 4e02b07
+stack clean
+stack build
+stack install
+||<
+<p>さらに [https://github.com/sky-y/pandoc-hateblo:title=pandoc-hateblo] というのを作ってる人がいたのでフォークしてみたが「見出しを <code>h3</code> タグに変える」という機能だけ作って数年前から止まっていいる. しかも私はまだ haskell がよく分かっていないので, [https://pandoc.org/filters.html:title=フィルタに関する公式ガイド]から辿って見つけた Python の <code>panflute</code> を使うことにした((内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から `–to` フォーマットへ変換, という順にパイプラインで実行されているのでフィルタはコマンドラインの標準入出力を操作できるスクリプトならなんでも良いらしい. そのうちでも Haskell か Lua で書いたほうが良いらしいが, 今回はどちらも構文を覚える時間が惜しかったので使わなかった. Haskell はそのうち覚えたいが……)). その結果, オリジナルとは全く別物になった. なお pandoc を 2.9にしたのは <code>panflute</code> が対応していない((https://github.com/sergiocorreia/panflute/issues/142))ためなので, この問題が解決されればもう少し簡単になる.</p>
 <p>適当な場所にダウンロードしてパスを通しておく.</p>
 <p>[https://github.com/Gedevan-Aleksizde/pandoc-hateblo:embed:title]</p>
->||
+>|sh|
 git clone git@github.com:Gedevan-Aleksizde/pandoc-hateblo.git
 git checkout hatena-filter
 export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
 ||<
-<p>フォトライフのAPIキーを取得して, 設定ファイル <code>settings.json</code> に書き込んでおく. <code>blog_name</code> は人によっては違う形式になるはず. <code>FOTO_FOLDER</code> は画像のアップロード先.</p>
+<p>フォトライフのAPIキーを取得して, 設定ファイル <code>settings.json</code> に書き込んでおく. <code>blog_name</code> は人によっては違う形式になるはず. <code>FOTO_FOLDER</code> は画像をアップロードしたいフォルダ. 未設定の場合は <code>Hatena Blog</code> になる</p>
 >|json|
 {
   "FOTO_API_KEY": "XXXXXX",
@@ -29,12 +40,13 @@ export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
   "FOTO_FOLDER": "ZZZZ"
 }
 ||<
-<p>もしくは上記と同様の環境変数を設定して実行する.</p>
-<p>で, <strong>変換したいファイルのディレクトリに移動し</strong> (フィルタの処理内でパスを参照するのがめんどくさくてやってないため) 以下のようなコマンドで変換する. <code>[...]</code> はオプション.</p>
+<p>もしくは実行時に上記と同様の環境変数を設定する.</p>
+<h3 id="コマンド">コマンド</h3>
+<p><strong>変換したいファイルのディレクトリに移動し</strong> (フィルタの処理内でパスを参照するのがめんどくさくてやってないため) 以下のようなコマンドで変換する. <code>[...]</code> はオプション.</p>
 >|sh|
-latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] INPUT.tex
+latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] [-o OUT.html]  INPUT.tex
 ||<
-<p>複数ある場合 (1) カレントディレクトリの <code>settings.json</code>, (2) <code>hatena-filter/settings</code> <code>/</code> の <code>settings.json</code>, (3) 環境変数. で優先される.</p>
+<p>複数ある場合 (1) カレントディレクトリの <code>settings.json</code>, (2) <code>hatena-filter/settings</code> <code>/</code> の <code>settings.json</code>, (3) 環境変数. で優先される. また, 画像ファイルのアップロードをせず動作確認だけしたい場合は <code>-M enable-upload=false</code> という引数を追加する. また, <code>-o ...</code> を省略すると標準出力に出る.</p>
 <h2 id="やりたいこと">やりたいこと</h2>
 <p>以前と同様, LyX で書いた texファイルを<strong>はてな記法</strong> (はてなmarkdownではない) に対応したhtmlに変換したい. LyX は補完機能が充実しているので, 長いコマンドを短縮名のマクロで再定義するみたいなユーザー定義のマクロはあまり使わない, 使うとしてもコンテンツから分離したレイアウトの設定くらいにしか使わないという想定. 以下, 変換したいもの一覧 (参考: [https://help.hatenablog.com/entry/text-hatena-list:title=はてな記法一覧]).</p>
 <ul>
@@ -87,32 +99,20 @@ latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl] 
 <li><p>CSSはグローバルな設定だけでなんとかする方針</p></li>
 </ul></li>
 </ul>
-<h2 id="やり方">やり方</h2>
-<h3 id="インストール">インストール</h3>
-<p>まずは pandoc を用意する. Ubuntu のレポジトリだとバージョンが少し古いので [https://github.com/jgm/pandoc/releases:title=github] で <code>.deb</code> を落としてきてインストールする. 関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1 を使用した. このへんバージョン制約が多いみたいなので注意. Pandoc 2.9.2.1 に対応する <code>pandoc-crossref</code> の最新バージョンは 3.6.4 だが, これを少しだけいじったやつを使う (理由は後述). <code>stack</code> のほうは ver. 2.3.3</p>
->|sh|
-git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
-cd pandoc-crossref
-git checkout 4e02b07
-stack clean
-stack build
-stack install
-||<
-<p>さらに [https://github.com/sky-y/pandoc-hateblo:title=pandoc-hateblo] というのを作ってる人がいたのでフォークしてみたが「見出しを <code>h3</code> タグに変える」という機能だけ作って数年前から止まっていいる. しかも私はまだ haskell がよく分かっていないので, [https://pandoc.org/filters.html:title=フィルタに関する公式ガイド]から辿って見つけた Python の <code>panflute</code> を使うことにした((内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から `–to` フォーマットへ変換, という順にパイプラインで実行されているのでフィルタはコマンドラインの標準入出力を操作できるスクリプトならなんでも良いらしい. そのうちでも Haskell か Lua で書いたほうが良いらしいが, 今回はどちらも構文を覚える時間が惜しかったので使わなかった. Haskell はそのうち覚えたいが……)). その結果, オリジナルとは全く別物になった. なお pandoc を 2.9にしたのは <code>panflute</code> が対応していない((https://github.com/sergiocorreia/panflute/issues/142))ため.</p>
-<p>[https://github.com/Gedevan-Aleksizde/pandoc-hateblo:embed:title]</p>
-<h3 id="pandoc-の処理の概要">pandoc の処理の概要</h3>
-<p>pandoc の内部での処理フローは, (1) ソースを解析する (2) 中間ファイルとして抽象構文木に変換する (3) 指定したフォーマットに再変換する, という処理をしており, フィルタは (2) の抽象構文木を修正する処理のことになる((https://pandoc.org/filters.html)). なお中間ファイルは json 形式でも表現できるので, 多くの言語では json 前提で書いたほうが楽かもしれないが, Python には <code>pandocfilters</code> と <code>panflute</code> という2種類のpandocフィルタ用モジュールがある. 今回は <code>panflute</code> を使ってみた.</p>
+<h2 id="解説">解説</h2>
+<h3 id="pandoc-の内部処理の簡単な説明">pandoc の内部処理の簡単な説明</h3>
+<p>このセクションの話はほぼ Pandoc の[https://pandoc.org/filters.html:title=公式ドキュメント] と Panflute の[http://scorreia.com/software/panflute/guide.html:title=公式ガイド]に書いてあることに基づく.</p>
+<p>pandoc の内部での処理フローは, (1) ソースを解析する (2) 中間ファイルとして<strong>抽象構文木</strong> (ast) に変換する (3) 指定したフォーマットに再変換する, という処理をしており, フィルタは (2) の抽象構文木を修正する処理のことになる((https://pandoc.org/filters.html)). なお中間ファイルは json 形式でも表現できるので, 多くの言語では json 前提で書いたほうが楽かもしれないが, Python には <code>pandocfilters</code> と <code>panflute</code> という2種類のpandocフィルタ用モジュールがある. 今回は <code>panflute</code> を使ってみた.</p>
+<p>Ast の詳細なドキュメントはまだない((https://github.com/jgm/pandoc/issues/3262))ため, 以下は私の解釈であり, 多少語弊があるかもしれない. しかし少なくともこの解釈を前提にこのフィルタを作っている.</p>
 <p><code>.ast</code> ファイルに記述される抽象構文木の最小単位 (element) の書式は<code></code></p>
 >||
 <element_type> <attribures> <content>
 ||<
 <p>となる.<code> &lt;element_type&gt;</code> が <code>Str</code> (文字列) とか <code>Link</code> (ハイパーリンク) とか,<code> &lt;attributes&gt;</code> は省略可能. 書式はパーレンで括ったリストになる.</p>
-<p><code></code></p>
 >||
-("", [], [("<key>", "<value>"), (...)])
+("<id>", [<class>], [("<key>", "<value>"), (...)])
 ||<
-<p><code>panflute</code> では, <code>.format</code>, <code>&lt;element&gt;.attributes</code> でアクセスできる. <code>collections.OrderedDict</code> 型. ただし平文 (<code>Str</code> など) にはこの属性はない.<code> &lt;content&gt;</code> には (1) ダブルクオーテーションで括った文字列, (2) 構文木の入れ子, (3) それらを <code>[</code>, <code>]</code>で括ったリスト, のどれかを与えられる. <code>ELEM.content</code> でアクセスできる. これは <code>list</code> 型.</p>
-<p>構文木入れ子の最上層の型は <code>Pandoc</code> であり, <code>&lt;attributes&gt;</code> にメタ情報が入っている. ただしこれは <code>doc.get_metadata()</code> でアクセスする.</p>
+<p>それぞれ HTML タグの ID, クラス, それ以外のスタイルや属性, になる.<code> panflute</code> では, <code>&lt;element&gt;.identifier</code>, <code>&lt;element&gt;.classes</code>, <code>&lt;element&gt;.attributes</code> でアクセスできる. 属性は <code>collections.OrderedDict</code> 型で, 平文 (<code>Str</code>) など属性を持たないタグもある.<code> &lt;content&gt;</code> には <code>&lt;element&gt;.content</code> でアクセスできる. この中には (1) ダブルクオーテーションで括った文字列, (2) 構文木の入れ子, (3) それらを <code>[</code>, <code>]</code>で括ったリスト, のどれかを与えられる. 構文木入れ子の最上層の型は <code>Pandoc</code> であり, <code>&lt;attributes&gt;</code> にメタ情報が入っている. ただし <code>panflute</code> ではこれは他のタグとは違う特別扱いで, <code>doc.get_metadata()</code> でアクセスする.</p>
 <h3 id="作った処理">作った処理</h3>
 <p>まずはLaTeXで書いたこのブログの原稿(実際には LyX で作成して texファイルとしてエクスポートしている) を pandoc で中間ファイルに変換する. まだ対応関係がよくわからんので以下を何度も実行しながら作った.</p>
 >|sh|
@@ -172,7 +172,7 @@ pandoc --mathjax --wrap=auto -f latex -t html  -F pandoc-crossref -F pandoc-cite
 </table>
 </div>
 <p>
-><figure class="figure-image figure-image-fotolife" title="図 1: ここにキャプション"><figcaption id="fig:tiger">図 1: ここにキャプション</figcaption>INSERT_FILE_ID_HERE</figure><
+><figure class="figure-image figure-image-fotolife" title="図 1: ここにキャプション"><figcaption id="fig:tiger">図 1: ここにキャプション</figcaption>[f:id:ill-identified:20200824125354p:plain]</figure><
 </p>
 <p>数式参照も可能. <span data-reference-type="ref" data-reference="eq:sincos">(\ref{eq:sincos})</span>, <span data-reference-type="ref" data-reference="eq:integral">(\ref{eq:integral})</span></p>
 <p>文献引用にも対応. これらの本を表示例に選んだ理由は特にない: <span class="citation" data-cites="Hoshino2009">星野 (<a href="#ref-Hoshino2009" role="doc-biblioref">2009</a>)</span>, <span class="citation" data-cites="yamamoto2019">山本 (<a href="#ref-yamamoto2019" role="doc-biblioref">2019</a>)</span>, <span class="citation" data-cites="HastieTibshrianiFriedman2009">Hastie, Tibshriani, and Friedman (<a href="#ref-HastieTibshrianiFriedman2009" role="doc-biblioref">2009</a>)</span>, <span class="citation" data-cites="igami2017Estimating">Igami (<a href="#ref-igami2017Estimating" role="doc-biblioref">2017</a>)</span></p>
@@ -182,8 +182,9 @@ pandoc --mathjax --wrap=auto -f latex -t html  -F pandoc-crossref -F pandoc-cite
 <li><p>数式参照には数式側に <code>\tag{}</code> が必須</p></li>
 <li><p><code>prettyref</code>/<code>refstyle</code> への対応. 相互参照のときに参照IDだけ書けば十分なはずだが, <code>\ref{}</code> では「図」とか「表」とか接頭辞も毎回いちいち書く必要がある. これはナンセンスなので私は LyX 上では <code>prettyref.sty</code> の書式設定で対処している(LyX 開発者側は類似機能を持つ <code>refstyle.sty</code> に移行したがっているが私は未対応). しかし今回はまだ pandoc は <code>prettyref.sty</code> の <code>\prettyref{}</code> に対応していない.</p></li>
 <li><p>バックスラッシュで始まる TeX コマンドを平文で書くと MathJaX が暴発することがある. しかしこれははてなブログが悪いのでこちらでは解決できない.</p></li>
-<li><p>参考文献リストのフォーマット. CSLファイルか biblatex のフォーマットを書く必要がある. CSL は XML で書くので比較的簡単だが, 仕様上, 私が LaTeX でいつも使っている <code>jecon.bst</code> を再現するのは難しい. おそらくは biblatex で書いたほうがよそにも流用できて良さそうだが (Word を使う予定がないので CSL は全く出番がない) である. あるいはフィルタとして処理を書くという方針でもできるだろうが, どちらも大変なので一旦保留.</p></li>
+<li><p>参考文献リストのフォーマット. CSLファイルか BibLaTeX のフォーマットを書く必要がある. CSL は XML で書くので比較的簡単だが, 仕様上, 私が LaTeX でいつも使っている <code>jecon.bst</code> を再現するのは難しい. おそらくは BibLaTeX で書いたほうがよそにも流用できて良さそうで (Word を使う予定がないので CSL は全く出番がない), あるいはフィルタとして処理を書くという方針でもできるだろうが, どちらも大変なので一旦保留.</p></li>
 <li><p>せっかくAPI使うのなら投稿まで自動化してもよかったけどめんどくさくなった</p></li>
+<li><p>参考文献がAmazonにあるなら, リンクを自動で追加したい</p></li>
 </ul>
 <h2 class="unnumbered" id="bibliography">参考文献</h2>
 <div id="refs" class="references hanging-indent" role="doc-bibliography">
