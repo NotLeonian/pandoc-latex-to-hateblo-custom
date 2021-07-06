@@ -139,16 +139,21 @@ def filter_hatena_image(elem, doc):
   """
   enable_upload = doc.get_metadata('enable-upload')
   if not enable_upload:
-    enable_upload = True
+    enable_upload = False
 
   if isinstance(elem, pf.Image):
     if enable_upload:
       settings_local = Path().cwd().joinpath('settings.json')
-      settings_root = Path(__file__).resolve().parent.joinpath('settings/settings.json')
+      settings_root = Path(__file__).resolve().parent.parent.joinpath('settings/settings.json')
+      warnings.warn(settings_local)
+      warnings.warn(settings_root)
       if settings_local.exists():
-        with settings_local.open('r') as f:
-          params_hatenaapi = json.load(f)
+        path_settings = settings_local
       elif settings_root.exists():
+        path_settings = settings_root
+      else:
+         path_settings = None
+      if path_settings is not None:
         with settings_root.open('r') as f:
           params_hatenaapi = json.load(f)
       else:
