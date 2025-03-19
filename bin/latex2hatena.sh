@@ -21,4 +21,4 @@ if [ $# -eq 0 ]; then
   usage
   exit 1
 fi
-pandoc --mathjax --wrap=auto -F pandoc-crossref  -F pandoc-citeproc -F ${filterdir}/hateblo-filter.py -f latex -M reference-section-title='参考文献' -M crossrefYaml=${settingsdir}/pandoc-crossref-settings.yaml $@
+pandoc --mathjax --wrap=auto -F pandoc-crossref -F ${filterdir}/hateblo-filter.py -f latex -M reference-section-title='参考文献' -M crossrefYaml=${settingsdir}/pandoc-crossref-settings.yaml $@
