@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 # from pandocfilters import toJSONFilter, Emph, Para
 import argparse
@@ -112,7 +112,13 @@ def filter_hatena_mathjax(elem, doc):
     math_expr = elem.text
     math_expr = re.sub('^\\\\begin{aligned}', r'\\begin{align}', math_expr)
     math_expr = re.sub('\\\\end{aligned}', r'\\end{align}', math_expr)
-    math_code = pf.RawInline('[tex: {}]'.format(math_expr))
+    math_expr = re.sub('\[', r'\\[', math_expr)
+    math_expr = re.sub('\]', r'\\]', math_expr)
+    math_expr = re.sub('_', ' _ ', math_expr)
+    math_expr = re.sub('\^', ' ^ ', math_expr)
+    math_expr = re.sub('<', r'\\lt ', math_expr)
+    math_expr = re.sub('>', r'\\gt ', math_expr)
+    math_code = pf.RawInline(' [tex: {}] '.format(math_expr))
     if elem.format == 'DisplayMath':
       return [pf.RawInline('\n'), pf.Span(math_code, classes=['Math', 'DisplayMath']), pf.RawInline('\n')]
     elif elem.format == 'InlineMath':
