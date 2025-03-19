@@ -1,3 +1,11 @@
+# pandoc-latex-to-hateblo-custom: LaTeXからはてな記法への変換用Pandocフィルタ
+
+メンテナンスが終了している `pandoc-citeproc` がコマンドに使用されており手元の環境で動かなくなってしまったこと, 数式中のかっこなどについてはてな記法への変換を追加したいことからフォークした.
+代わりの `citeproc` をインストールすれば動くはずである.
+
+以下は upstream の `README.md` である.
+誤字を除いてそのまま残してあるので, リポジトリ名などは適宜読み替えること.
+
 # pandoc-hateblo: はてな記法用pandocフィルタ
 
 texファイルをはてなブログのはてな記法に変換するフィルタ. upstream とはもはや別物になった
@@ -15,7 +23,7 @@ texファイルをはてなブログのはてな記法に変換するフィル�
 
 1. Python, pandoc が指定のバージョンになっていることを確認する
 2. `pandoc-crossref` 0.3.6.4 の私家修正版をインストールする  
-この措置は `pandoc`, `pandoc-crossfef`, `panflute` の互換性がシビアだったことによるもので, panflute が最新バージョンに対応すればもう少し簡単になるはず.
+この措置は `pandoc`, `pandoc-crossref`, `panflute` の互換性がシビアだったことによるもので, panflute が最新バージョンに対応すればもう少し簡単になるはず.
 
 ```sh
 git clone git@github.com:Gedevan-Aleksizde/pandoc-crossref.git
