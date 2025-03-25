@@ -19,6 +19,9 @@ import random
 import mimetypes
 from xml.etree import ElementTree
 
+# pangu.pyを用いて、日本語と英数字の間にスペースを入れる
+from pangu import spacing
+
 # これを参考にした
 # https://www.lisz-works.com/entry/python3-fotolife-upload
 
@@ -67,6 +70,19 @@ class hatena_token():
         raise requests.exceptions.RequestException(f'Error!\nstatus_code: {r.status_code}\nmessage: {r.text}')
     self.last_result = r
     return self
+
+def filter_hatena_space(elem, doc):
+  """
+  日本語と英数字の間にスペースを入れるとともに、数値を数式に置き換え
+  """
+  if isinstance(elem, pf.Str):
+    # `elem.parent` が `pf.Para` や `pf.Header` でない場合は処理しない
+    if not isinstance(elem.parent, (pf.Para, pf.Header)):
+        return pf.Str(elem.text)
+    text = spacing(elem.text)
+    # 数値を数式に変換
+    text = re.sub(r'(?:(?<=\s)|(?<=^))([+-]?\d+(\.\d+)?)(?:(?=\s)|(?=$))', r'[tex: \1]', text)
+    return pf.Str(text)
 
 def filter_hatena_toc(elem, doc):
   """
@@ -207,6 +223,7 @@ def filter_eqref(elem, doc):
 
 if __name__ == '__main__':
     pf.run_filters(actions=[
+      filter_hatena_space,
       filter_hatena_toc,
       filter_hatena_header_level,
       filter_hatena_link,
