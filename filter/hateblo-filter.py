@@ -81,7 +81,8 @@ def filter_hatena_space(elem, doc):
         return pf.Str(elem.text)
     text = spacing(elem.text)
     # 数値を数式に変換
-    text = re.sub(r'(?:(?<=\s)|(?<=^))([+-]?\d+(\.\d+)?)(?:(?=\s)|(?=$))', r'[tex: \1]', text)
+    # なお、このとき括弧や句読点などが前後にあってスペースが入っていない場合を考慮する
+    text = re.sub(r'(?:(?<=\s)|(?<=^)|(?<=[^\x00-\x7F]))([+-]?\d+(\.\d+)?)(?:(?=\s)|(?=$)|(?=[^\x00-\x7F]))', r'[tex: \1]', text)
     return pf.Str(text)
 
 def filter_hatena_toc(elem, doc):
