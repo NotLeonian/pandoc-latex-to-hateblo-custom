@@ -125,8 +125,8 @@ def filter_hatena_footnote(elem, doc):
     return [pf.Str('((')] + content_without_code + [pf.Str('))')]
 
 def filter_hatena_mathjax(elem, doc):
-  if isinstance(elem, pf.Math):
-    math_expr = elem.text
+  def convert_math_symbols(text, is_displaymath=False):
+    math_expr = text
     math_expr = re.sub('^\\\\begin{aligned}', r'\\begin{align}', math_expr)
     math_expr = re.sub('\\\\end{aligned}', r'\\end{align}', math_expr)
     math_expr = re.sub(r'\[', r'\\[', math_expr)
@@ -135,11 +135,19 @@ def filter_hatena_mathjax(elem, doc):
     math_expr = re.sub(r'(?<!\\)\^', ' ^ ', math_expr)
     math_expr = re.sub('<', r'\\lt ', math_expr)
     math_expr = re.sub('>', r'\\gt ', math_expr)
-    math_code = pf.RawInline(' [tex: {}] '.format(math_expr))
-    if elem.format == 'DisplayMath':
-      return [pf.RawInline('\n'), pf.Span(math_code, classes=['Math', 'DisplayMath']), pf.RawInline('\n')]
-    elif elem.format == 'InlineMath':
-      return math_code
+    return ' [tex: {}{}] '.format('\\displaystyle ' if is_displaymath else "", math_expr)
+
+  if isinstance(elem, pf.Math) and elem.format == 'InlineMath':
+    return pf.RawInline(convert_math_symbols(elem.text))
+
+  if isinstance(elem, pf.Para) and any(isinstance(content, pf.Math) and content.format == 'DisplayMath' for content in elem.content):
+    result_elem = pf.Para()
+    for content in elem.content:
+      if isinstance(content, pf.Math) and content.format == 'DisplayMath':
+        result_elem.content.append(pf.RawInline('<div class="Math DisplayMath" style="text-align: center;"> ' + convert_math_symbols(content.text, True) + ' </div>'))
+      else:
+        result_elem.content.append(content)
+    return result_elem
 
 def filter_hatena_blockquote(elem, doc):
   if isinstance(elem, pf.BlockQuote):
