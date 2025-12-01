@@ -26,7 +26,7 @@ pandoc \
   -f latex \
   -t html5 \
   --mathjax \
-  --wrap=auto \
+  --wrap=none \
   -F pandoc-crossref \
   --citeproc \
   -F ${filterdir}/hateblo-filter.py \
