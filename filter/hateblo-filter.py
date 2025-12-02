@@ -87,22 +87,23 @@ class hatena_token:
         return self
 
 
-def filter_hatena_space(elem, doc):
+def filter_remove_softbreak(elem, doc):
     """
-    日本語と英数字の間にスペースを入れるとともに、数値を数式に置き換え
+    `pf.SoftBreak` を削除する
+    """
+    if isinstance(elem, pf.SoftBreak):
+        return []
+
+
+def filter_spacing(elem, doc):
+    """
+    `pf.Str` の英数字と CJK 文字との間にスペースを入れる
     """
     if isinstance(elem, pf.Str):
         # `elem.parent` が `pf.Para` や `pf.Header` でない場合は処理しない
         if not isinstance(elem.parent, (pf.Para, pf.Header)):
             return pf.Str(elem.text)
         text = spacing(elem.text)
-        # 数値を数式に変換
-        # なお、このとき括弧や句読点などが前後にあってスペースが入っていない場合を考慮する
-        text = re.sub(
-            r"(?:(?<=\s)|(?<=^)|(?<=[^\x00-\x7F]))([+-]?\d+(\.\d+)?)(?:(?=\s)|(?=$)|(?=[^\x00-\x7F]))",
-            r"[tex: \1]",
-            text,
-        )
         return pf.Str(text)
 
 
@@ -163,30 +164,29 @@ def filter_hatena_mathjax(elem, doc):
         math_expr = re.sub(r"(?<!\\)\^", " ^ ", math_expr)
         math_expr = re.sub("<", r"\\lt ", math_expr)
         math_expr = re.sub(">", r"\\gt ", math_expr)
-        return " [tex: {}{}] ".format(
+        return "[tex: {}{}]".format(
             "\\displaystyle " if is_displaymath else "", math_expr
         )
 
-    if isinstance(elem, pf.Math) and elem.format == "InlineMath":
-        return pf.RawInline(convert_math_symbols(elem.text))
-
-    if isinstance(elem, pf.Para) and any(
-        isinstance(content, pf.Math) and content.format == "DisplayMath"
-        for content in elem.content
-    ):
-        result_elem = pf.Para()
-        for content in elem.content:
-            if isinstance(content, pf.Math) and content.format == "DisplayMath":
-                result_elem.content.append(
-                    pf.RawInline(
-                        '<div class="Math DisplayMath" style="text-align: center;"> '
-                        + convert_math_symbols(content.text, True)
-                        + " </div>"
-                    )
-                )
-            else:
-                result_elem.content.append(content)
-        return result_elem
+    if isinstance(elem, pf.Math):
+        if elem.format == "InlineMath":
+            result_str = ""
+            if isinstance(elem.prev, pf.Str) and len(elem.prev.text):
+                test = elem.prev.text[-1] + "0"
+                if test != spacing(test):
+                    result_str += " "
+            result_str += convert_math_symbols(elem.text)
+            if isinstance(elem.next, pf.Str) and len(elem.next.text):
+                test = "0" + elem.next.text[0]
+                if test != spacing(test):
+                    result_str += " "
+            return pf.RawInline(result_str)
+        elif elem.format == "DisplayMath":
+            return pf.RawInline(
+                '\n<div class="Math DisplayMath" style="text-align: center;">'
+                + convert_math_symbols(elem.text, True)
+                + "</div>\n"
+            )
 
 
 def filter_hatena_blockquote(elem, doc):
@@ -305,7 +305,9 @@ def filter_table_remove_tag(elem, doc):
             if hasattr(x, "identifier") and x.identifier[:4] == "tab:"
         ]
         if len(ref_ids_tab) > 0:
-            tab_caption_inlines = [x for x in elem.caption.content if isinstance(x, pf.Inline)]
+            tab_caption_inlines = [
+                x for x in elem.caption.content if isinstance(x, pf.Inline)
+            ]
             tab_caption_inlines = [
                 x
                 for x in tab_caption_inlines
@@ -330,7 +332,8 @@ def filter_eqref(elem, doc):
 if __name__ == "__main__":
     pf.run_filters(
         actions=[
-            filter_hatena_space,
+            filter_remove_softbreak,
+            filter_spacing,
             filter_hatena_toc,
             filter_hatena_header_level,
             filter_hatena_link,
