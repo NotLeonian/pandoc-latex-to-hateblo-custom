@@ -16,7 +16,7 @@ import random
 import mimetypes
 from xml.etree import ElementTree
 
-# pangu.pyを用いて、日本語と英数字の間にスペースを入れる
+# pangu.pyを用いて, 日本語と英数字の間にスペースを入れる
 from pangu import spacing
 
 # これを参考にした
@@ -153,20 +153,22 @@ def filter_hatena_footnote(elem, doc):
         return [pf.Str("((")] + content_without_code + [pf.Str("))")]
 
 
-def filter_hatena_mathjax(elem, doc):
+def filter_hatena_katex(elem, doc):
     def convert_math_symbols(text, is_displaymath=False):
         math_expr = text
         math_expr = re.sub("^\\\\begin{aligned}", r"\\begin{align}", math_expr)
         math_expr = re.sub("\\\\end{aligned}", r"\\end{align}", math_expr)
-        math_expr = re.sub(r"\[", r"\\[", math_expr)
-        math_expr = re.sub(r"\]", r"\\]", math_expr)
+        math_expr = re.sub(r"\(", " ( ", math_expr)
+        math_expr = re.sub(r"\)", " ) ", math_expr)
         math_expr = re.sub(r"(?<!\\)_", " _ ", math_expr)
         math_expr = re.sub(r"(?<!\\)\^", " ^ ", math_expr)
         math_expr = re.sub("<", r"\\lt ", math_expr)
         math_expr = re.sub(">", r"\\gt ", math_expr)
-        return "[tex: {}{}]".format(
-            "\\displaystyle " if is_displaymath else "", math_expr
-        )
+        math_expr = re.sub(r"\s+", " ", math_expr)
+        if is_displaymath:
+            return "\\[{}\\]".format(math_expr)
+        else:
+            return "\\({}\\)".format(math_expr)
 
     if isinstance(elem, pf.Math):
         if elem.format == "InlineMath":
@@ -320,6 +322,7 @@ def filter_table_remove_tag(elem, doc):
 def filter_eqref(elem, doc):
     """
     [eq:...] の参照タグを MathJax 参照に置き換える
+    KaTeX だと使用できないと考えられるが, 残している
     """
     if isinstance(elem, pf.Link) and elem.url[:4] == "#eq:":
         ref_id_eq = elem.url[1:]
@@ -338,7 +341,7 @@ if __name__ == "__main__":
             filter_hatena_header_level,
             filter_hatena_link,
             filter_hatena_footnote,
-            filter_hatena_mathjax,
+            filter_hatena_katex,
             filter_hatena_blockquote,
             filter_hatena_codeblock,
             filter_hatena_image,
