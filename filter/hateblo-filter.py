@@ -134,7 +134,7 @@ def filter_hatena_link(elem, doc):
             if url_title == ":title:":
                 return pf.RawInline("[{}:title]".format(elem.url))
             if url_title == ":embed:":
-                return pf.RawInline("[{}:embed:title]".format(elem.url))
+                return pf.RawInline("[{}:embed:cite]".format(elem.url))
             elif url_title == "":
                 return pf.RawInline("[{}]".format(elem.url))
             else:
