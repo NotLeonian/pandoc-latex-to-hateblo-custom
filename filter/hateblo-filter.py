@@ -131,14 +131,27 @@ def filter_hatena_link(elem, doc):
     if isinstance(elem, pf.Link):
         if elem.url[0] != "#":
             url_title = pf.stringify(elem).strip()
-            if url_title == ":title:":
-                return pf.RawInline("[{}:title]".format(elem.url))
             if url_title == ":embed:":
                 return pf.RawInline("[{}:embed:cite]".format(elem.url))
-            elif url_title == "":
-                return pf.RawInline("[{}]".format(elem.url))
+            if url_title == ":title:":
+                return pf.RawInline("[{}:title]".format(elem.url))
             else:
-                return pf.RawInline("[{0}:title={1}]".format(elem.url, url_title))
+                if url_title == "":
+                    url_title = elem.url
+                    hatena_str = "[{}]".format(elem.url)
+                else:
+                    hatena_str = "[{0}:title={1}]".format(elem.url, url_title)
+                result_str = ""
+                if isinstance(elem.prev, pf.Str) and len(elem.prev.text):
+                    test = elem.prev.text[-1] + url_title[0]
+                    if test != spacing(test):
+                        result_str += " "
+                result_str += hatena_str
+                if isinstance(elem.next, pf.Str) and len(elem.next.text):
+                    test = url_title[-1] + elem.next.text[0]
+                    if test != spacing(test):
+                        result_str += " "
+                return pf.RawInline(result_str)
 
 
 def filter_hatena_footnote(elem, doc):
