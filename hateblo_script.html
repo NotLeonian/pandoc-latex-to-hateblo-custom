@@ -1,3 +1,4 @@
+<!-- KaTeX の読み込み -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css"
     integrity="sha384-WcoG4HRXMzYzfCgiyfrySxx90XSl2rxY5mnVY5TwtWE6KLrArNKn0T/mOgNL0Mmi" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"
@@ -8,32 +9,52 @@
     integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh"
     crossorigin="anonymous">
 </script>
+
+<!-- KaTeX_Main の font-face 化 -->
 <style>
     @font-face {
-        font-family: "KaTeX_Ascii";
+        font-family: "KaTeX_Unicode";
         src: url("https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/fonts/KaTeX_Main-Regular.woff2")
             format("woff2");
         font-weight: 400;
         font-style: normal;
-        unicode-range: U+0021-007E;
+        unicode-range:
+            U+0021-007E,     /* 基本ラテン文字 (制御文字と空白を除く) */
+            U+00D7, U+00F7,  /* × / ÷ */
+            U+2013, U+2014,  /* エンダッシュ / エムダッシュ */
+            U+2018, U+2019,  /* シングルクォート */
+            U+201C, U+201D;  /* ダブルクォート */
         size-adjust: 121%;
     }
+
+    /* 太字も同様 */
     @font-face {
-        font-family: "KaTeX_Ascii";
+        font-family: "KaTeX_Unicode";
         src: url("https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/fonts/KaTeX_Main-Bold.woff2")
             format("woff2");
         font-weight: 700;
         font-style: normal;
-        unicode-range: U+0021-007E;
+        unicode-range:
+            U+0021-007E,     /* 基本ラテン文字 (制御文字と空白を除く) */
+            U+00D7, U+00F7,  /* × / ÷ */
+            U+2013, U+2014,  /* エンダッシュ / エムダッシュ */
+            U+2018, U+2019,  /* シングルクォート */
+            U+201C, U+201D;  /* ダブルクォート */
         size-adjust: 121%;
     }
+
     html, body {
-        font-family: KaTeX_Ascii,helvetica,Segoe UI,游ゴシック体,YuGothic,游ゴシック Medium,Yu Gothic Medium,游ゴシック,Yu Gothic,メイリオ,Meiryo,sans-serif
+        /* biome-ignore lint/suspicious/noDuplicateFontNames: 元々の Smooth の書き方に合わせている */
+        font-family: KaTeX_Unicode,helvetica,Segoe UI,游ゴシック体,YuGothic,游ゴシック Medium,Yu Gothic Medium,游ゴシック,Yu Gothic,メイリオ,Meiryo,sans-serif
     }
+
+    /* 記事のタイトル */
     .entry-title {
-        font-family: KaTeX_Ascii,Times New Roman,游明朝体,YuMincho,游明朝,Yu Mincho,serif
+        font-family: KaTeX_Unicode,Times New Roman,游明朝体,YuMincho,游明朝,Yu Mincho,serif
     }
 </style>
+
+<!-- KaTeX によるレンダリング -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         renderMathInElement(document.body, {
