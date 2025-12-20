@@ -100,9 +100,6 @@ def filter_spacing(elem, doc):
     `pf.Str` の英数字と CJK 文字との間にスペースを入れる
     """
     if isinstance(elem, pf.Str):
-        # `elem.parent` が `pf.Para` や `pf.Header` でない場合は処理しない
-        if not isinstance(elem.parent, (pf.Para, pf.Header)):
-            return pf.Str(elem.text)
         text = spacing(elem.text)
         return pf.Str(text)
 
