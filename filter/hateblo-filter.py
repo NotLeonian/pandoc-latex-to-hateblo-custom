@@ -166,8 +166,6 @@ def filter_hatena_footnote(elem, doc):
 def filter_hatena_katex(elem, doc):
     def convert_math_symbols(text, is_displaymath=False):
         math_expr = text
-        math_expr = re.sub("^\\\\begin{aligned}", r"\\begin{align}", math_expr)
-        math_expr = re.sub("\\\\end{aligned}", r"\\end{align}", math_expr)
         math_expr = re.sub(r"\(", " ( ", math_expr)
         math_expr = re.sub(r"\)", " ) ", math_expr)
         math_expr = re.sub(r"(?<!\\)_", " _ ", math_expr)
