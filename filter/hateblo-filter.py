@@ -101,6 +101,35 @@ def filter_spacing(elem, doc):
     """
     if isinstance(elem, pf.Str):
         text = spacing(elem.text)
+
+        def add_space(text: str, cjk: str):
+            res_list: list[str] = []
+            L = len(text)
+
+            for i, ch in enumerate(text):
+                if ch != cjk:
+                    res_list.append(ch)
+                    continue
+
+                if i > 0:
+                    prev = text[i - 1]
+                    test = prev + "あ"
+                    if test != spacing(test):
+                        res_list.append(" ")
+
+                res_list.append("々")
+
+                if i + 1 < L:
+                    next = text[i + 1]
+                    test = "あ" + next
+                    if test != spacing(test):
+                        res_list.append(" ")
+
+            return "".join(res_list)
+
+        # pangu.spacing 関数は「々」を CJK 文字として扱ってくれない
+        text = add_space(text, "々")
+
         return pf.Str(text)
 
 
