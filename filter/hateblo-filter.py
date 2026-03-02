@@ -1,4 +1,4 @@
-#! /usr/bin/env -S uv run
+#!/usr/bin/env -S uv run
 
 # from pandocfilters import toJSONFilter, Emph, Para
 import os

@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # -o, --bibliography=, --csl=, -M enable-upload=true/false
 execdir="`dirname $0`"
 filterdir="${execdir}/../filter"
