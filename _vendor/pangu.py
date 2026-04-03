@@ -20,7 +20,7 @@ import sys
 __version__ = '4.0.6.1'
 __all__ = ['spacing_text', 'spacing_file', 'spacing', 'cli']
 
-CJK = r'\u2e80-\u2eff\u2f00-\u2fdf\u3040-\u309f\u30a0-\u30fa\u30fc-\u30ff\u3100-\u312f\u3200-\u32ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff'
+CJK = r'\u2e80-\u2eff\u2f00-\u2fdf\u3005\u3040-\u309f\u30a0-\u30fa\u30fc-\u30ff\u3100-\u312f\u3200-\u32ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff'
 
 ANY_CJK = re.compile(r'[{CJK}]'.format(CJK=CJK))
 
@@ -41,8 +41,8 @@ HASH_ANS_CJK_HASH = re.compile('([{CJK}])(#)([{CJK}]+)(#)([{CJK}])'.format(CJK=C
 CJK_HASH = re.compile('([{CJK}])(#([^ ]))'.format(CJK=CJK))
 HASH_CJK = re.compile('(([^ ])#)([{CJK}])'.format(CJK=CJK))
 
-CJK_OPERATOR_ANS = re.compile('([{CJK}])([\\+\\-\\*\\/=&\\|<>])([A-Za-z0-9])'.format(CJK=CJK))
-ANS_OPERATOR_CJK = re.compile('([A-Za-z0-9])([\\+\\-\\*\\/=&\\|<>])([{CJK}])'.format(CJK=CJK))
+CJK_OPERATOR_ANS = re.compile('([{CJK}])([\\+\\*\\/=&\\|<>])([A-Za-z0-9])'.format(CJK=CJK))
+ANS_OPERATOR_CJK = re.compile('([A-Za-z0-9])([\\+\\*\\/=&\\|<>])([{CJK}])'.format(CJK=CJK))
 
 FIX_SLASH_AS = re.compile(r'([/]) ([a-z\-_\./]+)')
 FIX_SLASH_AS_SLASH = re.compile(r'([/\.])([A-Za-z\-_\./]+) ([/])')
@@ -56,8 +56,8 @@ LEFT_BRACKET_ANY_RIGHT_BRACKET_ANS_CJK = re.compile('([\u201c])([A-Za-z0-9{CJK}\
 AN_LEFT_BRACKET = re.compile(r'([A-Za-z0-9])([\(\[\{])')
 RIGHT_BRACKET_AN = re.compile(r'([\)\]\}])([A-Za-z0-9])')
 
-CJK_ANS = re.compile('([{CJK}])([A-Za-z\u0370-\u03ff0-9@\\$%\\^&\\*\\-\\+\\\\=\\|/\u00a1-\u00ff\u2150-\u218f\u2700—\u27bf])'.format(CJK=CJK))
-ANS_CJK = re.compile('([A-Za-z\u0370-\u03ff0-9~\\!\\$%\\^&\\*\\-\\+\\\\=\\|;:,\\./\\?\u00a1-\u00ff\u2150-\u218f\u2700—\u27bf])([{CJK}])'.format(CJK=CJK))
+CJK_ANS = re.compile('([{CJK}])([A-Za-z\u0370-\u03ff0-9@\\$%\\^&\\*\\+\\\\=\\|/\u00a1-\u00ff\u2150-\u218f\u2700\u27bf])'.format(CJK=CJK))
+ANS_CJK = re.compile('([A-Za-z\u0370-\u03ff0-9~\\!\\$%\\^&\\*\\+\\\\=\\|;:,\\./\\?\u00a1-\u00ff\u2150-\u218f\u2700\u27bf])([{CJK}])'.format(CJK=CJK))
 
 S_A = re.compile(r'(%)([A-Za-z])')
 
