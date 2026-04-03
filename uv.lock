@@ -189,7 +189,6 @@ version = "2.0.0"
 source = { virtual = "." }
 dependencies = [
     { name = "panflute" },
-    { name = "pangu" },
     { name = "requests" },
     { name = "types-requests" },
 ]
@@ -204,7 +203,6 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "panflute", specifier = ">=2.3.1" },
-    { name = "pangu", specifier = ">=4.0.6.1" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "types-requests", specifier = ">=2.32.4.20250913" },
 ]
@@ -227,15 +225,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b7/91/b659923bea127e51bc1b279c3afb3724cae116893ddba7ae498a97496693/panflute-2.3.1.tar.gz", hash = "sha256:5f1bd02a34ef3982ee025ec5b58fb3a6eedfc31d994b8ae39d8dc9915a2d8f1f", size = 44829, upload-time = "2024-03-20T05:47:41.374Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/bf/dd/49f5d0aa985c14218da8759ec4a93390b683c92fd9081d5b96383d48db6e/panflute-2.3.1-py3-none-any.whl", hash = "sha256:e44afd875b7b17ffebbbe58282849df06d9f1b20a45a2f933cd51bdcf4e89130", size = 36714, upload-time = "2024-03-20T05:47:38.375Z" },
-]
-
-[[package]]
-name = "pangu"
-version = "4.0.6.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/78/dd/55a1e9d35ac17f49869359b2197fc09d17ee024ba545985b49b3e75a870a/pangu-4.0.6.1.tar.gz", hash = "sha256:f799d127709fe5ecff5d476945ac63d4be758b7bda02efb95715f1dc24472a2f", size = 6288, upload-time = "2019-02-08T18:17:30.527Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/77/b52fac2ca4e4596f22dd6200b99ad515fb64b1ae7d3a12325b45b11e2a67/pangu-4.0.6.1-py3-none-any.whl", hash = "sha256:5023dced34b48da7ec61a2847efcbb8cf4fb748f8e589e1e7dfb008b7ad00206", size = 6401, upload-time = "2019-02-08T18:17:28.142Z" },
 ]
 
 [[package]]

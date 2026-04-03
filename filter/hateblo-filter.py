@@ -7,6 +7,7 @@ from pathlib import Path
 import json
 import panflute as pf
 import re
+import sys
 
 import requests
 import base64
@@ -16,8 +17,10 @@ import random
 import mimetypes
 from xml.etree import ElementTree
 
+sys.path.append(os.getcwd())
+
 # pangu.pyを用いて, 日本語と英数字の間にスペースを入れる
-from pangu import spacing
+from _vendor.pangu import spacing
 
 # これを参考にした
 # https://www.lisz-works.com/entry/python3-fotolife-upload
