@@ -206,6 +206,10 @@ def filter_hatena_katex(elem, doc):
         math_expr = re.sub(">", r"\\gt ", math_expr)
         math_expr = re.sub(r"\s+", " ", math_expr)
         if is_displaymath:
+            math_expr = re.sub(r"\\begin{align}", r"\\begin{aligned}", math_expr)
+            math_expr = re.sub(r"\\end{align}", r"\\end{aligned}", math_expr)
+            math_expr = re.sub(r"\\begin{align\*}", r"\\begin{aligned}", math_expr)
+            math_expr = re.sub(r"\\end{align\*}", r"\\end{aligned}", math_expr)
             return "\\[{}\\]".format(math_expr)
         else:
             return "\\({}\\)".format(math_expr)
