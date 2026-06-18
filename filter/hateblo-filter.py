@@ -1,21 +1,21 @@
 #!/usr/bin/env -S uv run
 
 # from pandocfilters import toJSONFilter, Emph, Para
-import os
-import warnings
-from pathlib import Path
-import json
-import panflute as pf
-import re
-import sys
-
-import requests
 import base64
 import hashlib
-from datetime import datetime
-import random
+import json
 import mimetypes
+import os
+import random
+import re
+import sys
+import warnings
+from datetime import datetime
+from pathlib import Path
 from xml.etree import ElementTree
+
+import panflute as pf
+import requests
 
 sys.path.append(os.getcwd())
 
