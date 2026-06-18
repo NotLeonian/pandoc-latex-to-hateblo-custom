@@ -22,7 +22,8 @@ sys.path.append(os.getcwd())
 # pangu.pyを用いて, 日本語と英数字の間にスペースを入れる
 from _vendor.pangu import spacing
 
-HATENA_API_KEYS = ("FOTO_API_KEY", "HATENA_USER", "HATENA_BLOG")
+HATENA_REQUIRED_API_KEYS = ("FOTO_API_KEY", "HATENA_USER", "HATENA_BLOG")
+HATENA_OPTIONAL_API_KEYS = ("FOTO_FOLDER",)
 
 
 def plain_or_para_content(block):
@@ -305,10 +306,13 @@ def filter_hatena_image(elem, doc):
                 with path_settings.open("r") as f:
                     raw_params_hatenaapi = json.load(f)
             else:
-                raw_params_hatenaapi = {k: os.environ.get(k) for k in HATENA_API_KEYS}
+                raw_params_hatenaapi = {
+                    k: os.environ.get(k)
+                    for k in HATENA_REQUIRED_API_KEYS + HATENA_OPTIONAL_API_KEYS
+                }
 
             params_hatenaapi = {}
-            for k in HATENA_API_KEYS:
+            for k in HATENA_REQUIRED_API_KEYS:
                 value = raw_params_hatenaapi.get(k)
                 if value is None:
                     raise KeyError(f"API Parameter `{k}` not found in the settings.")
@@ -316,10 +320,17 @@ def filter_hatena_image(elem, doc):
                     raise TypeError(f"API Parameter `{k}` must be a string.")
                 params_hatenaapi[k] = value
 
+            foto_folder = raw_params_hatenaapi.get("FOTO_FOLDER")
+            if foto_folder is None:
+                foto_folder = "Hatena Blog"
+            elif not isinstance(foto_folder, str):
+                raise TypeError("API Parameter `FOTO_FOLDER` must be a string.")
+
             uploader = hatena_token(
                 HATENA_USER=params_hatenaapi["HATENA_USER"],
                 HATENA_BLOG=params_hatenaapi["HATENA_BLOG"],
                 FOTO_API_KEY=params_hatenaapi["FOTO_API_KEY"],
+                FOTO_FOLDER=foto_folder,
             )
             uploader.post_hatenaphoto(elem.url)
             res = ElementTree.fromstring(uploader.last_result.text)
