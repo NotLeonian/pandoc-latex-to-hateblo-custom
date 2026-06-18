@@ -22,6 +22,16 @@ sys.path.append(os.getcwd())
 # pangu.pyを用いて, 日本語と英数字の間にスペースを入れる
 from _vendor.pangu import spacing
 
+HATENA_REQUIRED_API_KEYS = ("FOTO_API_KEY", "HATENA_USER", "HATENA_BLOG")
+HATENA_OPTIONAL_API_KEYS = ("FOTO_FOLDER",)
+
+
+def plain_or_para_content(block):
+    if isinstance(block, (pf.Plain, pf.Para)):
+        return [item for item in block.content if isinstance(item, pf.Inline)]
+    return []
+
+
 # これを参考にした
 # https://www.lisz-works.com/entry/python3-fotolife-upload
 
@@ -188,9 +198,12 @@ def filter_hatena_footnote(elem, doc):
     脚注をはてな記法に置き換え. <code> が含まれていると機能しないので平文に変換する.
     """
     if isinstance(elem, pf.Note):
+        if not elem.content:
+            return None
+
         content_without_code = [
             pf.Str(f"`{pf.stringify(x)}`") if isinstance(x, pf.Code) else x
-            for x in elem.content[0].content
+            for x in plain_or_para_content(elem.content[0])
         ]
         return [pf.Str("((")] + content_without_code + [pf.Str("))")]
 
@@ -233,20 +246,25 @@ def filter_hatena_katex(elem, doc):
 
 def filter_hatena_blockquote(elem, doc):
     if isinstance(elem, pf.BlockQuote):
+        quote_content = plain_or_para_content(elem.content[0]) if elem.content else []
         quotecomponents = (
             [pf.RawInline(">>"), pf.RawInline("\n")]
-            + list(elem.content[0].content)
+            + quote_content
             + [pf.RawInline("\n"), pf.RawInline("<<")]
         )
         return pf.Plain(*quotecomponents)
-    elif isinstance(elem, pf.Div) and "epigraph" in elem.classes:
-        epigraph_phrase = elem.content[0]
-        epigraph_source = elem.content[1]
+    elif (
+        isinstance(elem, pf.Div)
+        and "epigraph" in elem.classes
+        and len(elem.content) >= 2
+    ):
+        epigraph_phrase = plain_or_para_content(elem.content[0])
+        epigraph_source = plain_or_para_content(elem.content[1])
         return pf.Plain(
             *[pf.RawInline(">")]
-            + list(epigraph_source.content)
+            + epigraph_source
             + [pf.RawInline(">"), pf.RawInline("\n")]
-            + list(epigraph_phrase.content)
+            + epigraph_phrase
             + [pf.RawInline("\n"), pf.RawInline("<<")]
         )
 
@@ -276,8 +294,8 @@ def filter_hatena_image(elem, doc):
                 .resolve()
                 .parent.parent.joinpath("settings/settings.json")
             )
-            warnings.warn(settings_local)
-            warnings.warn(settings_root)
+            warnings.warn(str(settings_local))
+            warnings.warn(str(settings_root))
             if settings_local.exists():
                 path_settings = settings_local
             elif settings_root.exists():
@@ -285,24 +303,43 @@ def filter_hatena_image(elem, doc):
             else:
                 path_settings = None
             if path_settings is not None:
-                with settings_root.open("r") as f:
-                    params_hatenaapi = json.load(f)
+                with path_settings.open("r") as f:
+                    raw_params_hatenaapi = json.load(f)
             else:
-                params_hatenaapi = {
+                raw_params_hatenaapi = {
                     k: os.environ.get(k)
-                    for k in ("FOTO_API_KEY", "HATENA_USER", "HATENA_BLOG")
+                    for k in HATENA_REQUIRED_API_KEYS + HATENA_OPTIONAL_API_KEYS
                 }
-            for k in ("FOTO_API_KEY", "HATENA_USER", "HATENA_BLOG"):
-                if params_hatenaapi.get(k) is None:
+
+            params_hatenaapi = {}
+            for k in HATENA_REQUIRED_API_KEYS:
+                value = raw_params_hatenaapi.get(k)
+                if value is None:
                     raise KeyError(f"API Parameter `{k}` not found in the settings.")
-            uploader = hatena_token(**params_hatenaapi)
+                if not isinstance(value, str):
+                    raise TypeError(f"API Parameter `{k}` must be a string.")
+                params_hatenaapi[k] = value
+
+            foto_folder = raw_params_hatenaapi.get("FOTO_FOLDER")
+            if foto_folder is None:
+                foto_folder = "Hatena Blog"
+            elif not isinstance(foto_folder, str):
+                raise TypeError("API Parameter `FOTO_FOLDER` must be a string.")
+
+            uploader = hatena_token(
+                HATENA_USER=params_hatenaapi["HATENA_USER"],
+                HATENA_BLOG=params_hatenaapi["HATENA_BLOG"],
+                FOTO_API_KEY=params_hatenaapi["FOTO_API_KEY"],
+                FOTO_FOLDER=foto_folder,
+            )
             uploader.post_hatenaphoto(elem.url)
             res = ElementTree.fromstring(uploader.last_result.text)
-            image_file_id = ":".join(
-                res.find(
-                    "hatena:syntax", {"hatena": "http://www.hatena.ne.jp/info/xmlns#"}
-                ).text.split(":")[2:-1]
+            syntax = res.find(
+                "hatena:syntax", {"hatena": "http://www.hatena.ne.jp/info/xmlns#"}
             )
+            if syntax is None or syntax.text is None:
+                raise ValueError("Hatena photo response does not include syntax text.")
+            image_file_id = ":".join(syntax.text.split(":")[2:-1])
             image_file_id = f"[f:id:{image_file_id}:plain]"  # TODO: 画像サイズ調整
         else:
             image_file_id = "INSERT_FILE_ID_HERE"
