@@ -59,7 +59,7 @@ class hatena_token:
         b_digest = hashlib.sha1(
             b_nonce + created_at.encode() + foto_api_key.encode()
         ).digest()
-        return 'UsernameToken Username="{}", PasswordDigest="{}", Nonce="{}", Created="{}"'.format(
+        return "UsernameToken Username=\"{}\", PasswordDigest=\"{}\", Nonce=\"{}\", Created=\"{}\"".format(
             hatena_user,
             base64.b64encode(b_digest).decode(),
             base64.b64encode(b_nonce).decode(),
@@ -238,7 +238,7 @@ def filter_hatena_katex(elem, doc):
             return pf.RawInline(result_str)
         elif elem.format == "DisplayMath":
             return pf.RawInline(
-                '\n<div class="Math DisplayMath" style="text-align: center;">'
+                "\n<div class=\"Math DisplayMath\" style=\"text-align: center;\">"
                 + convert_math_symbols(elem.text, True)
                 + "</div>\n"
             )
@@ -360,7 +360,7 @@ def filter_hatena_image(elem, doc):
                 [
                     pf.RawInline("\n"),
                     pf.RawInline(
-                        f'><figure class="figure-image figure-image-fotolife" title="{caption_plain}"><figcaption id="{ref_ids_img[0]}">'
+                        f"><figure class=\"figure-image figure-image-fotolife\" title=\"{caption_plain}\"><figcaption id=\"{ref_ids_img[0]}\">"
                     ),
                 ]
                 + caption_inlines
