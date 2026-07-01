@@ -75,5 +75,5 @@
 _vendor/** linguist-vendored -text -eol
 
 # Generated files
-example/*.html linguist-generated -text -eol whitespace=-blank-at-eol
+example/*.html    linguist-generated -text -eol whitespace=-blank-at-eol
 example/**/*.html linguist-generated -text -eol whitespace=-blank-at-eol
