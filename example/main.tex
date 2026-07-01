@@ -37,7 +37,7 @@
 % document 環境内で \label 使わないと LyX が使用判定してくれず, エラーになるので以下で必ず読み込み
 \usepackage{listings}
 \usepackage{color}
-\usepackage{prettyref} 
+\usepackage{prettyref}
 
 % 以下4パッケージは表のデザイン用
 \usepackage{dcolumn}
@@ -293,8 +293,8 @@ LyX は補完機能が充実しているので, 長いコマンドを短縮名�
 \item 数式もはてな記法の \texttt{{[}tex: ...{]}} に置き換える.
 \begin{itemize}
 \item qiitaのようにいちいち変なエスケープをしなくて済むので簡単. 同様にエスケープが必要なはてな markdown ではなくはてな記法を使う理由の1つ.
-\item いつからか別行立て数式が改行しなくなってしまったので別行立てで表示できるようにする. 
-\item タグを反映できるように \texttt{aligned} を全て \texttt{align} に置換 
+\item いつからか別行立て数式が改行しなくなってしまったので別行立てで表示できるようにする.
+\item タグを反映できるように \texttt{aligned} を全て \texttt{align} に置換
 \item (pandoc 側でどっち使うのか指定できそうな気もするけどよくわからない)
 \end{itemize}
 \item 引用ブロックは \texttt{\textgreater\textgreater{} ... \textless\textless{}
@@ -382,7 +382,7 @@ Ast の詳細なドキュメントはまだない\footnote{https://github.com/jg
 \begin{lstlisting}[language=sh]
 pandoc --mathjax -f latex -t native -o blog/intermediate.ast -F ./hateblo-filter.py  blog/test.tex
 \end{lstlisting}
- 
+
 
 また, Python 内で \texttt{panflute.convert\_text()} を使うと各フォーマットのテキストや
 \texttt{panflute} のオブジェクトを相互に変換できるのでいろいろ確認できる (たまにうまくいかない).
@@ -398,7 +398,7 @@ pandoc --mathjax -f latex -t native -o blog/intermediate.ast -F ./hateblo-filter
 をメタデータに追加することで切り替えられる. しかしなんでハイフンだったりキャメルだったりするのか? また, デフォルトでは \texttt{false}
 のとのことだが, 想定してない LaTeX からだからなのか指定しなくてもリンクされる.}. このフィルタは基本的に Markdown から他の媒体への変換を想定しており, LaTeX からの変換は想定していない (issue
 \href{https://github.com/lierdakil/pandoc-crossref/issues/250}{\#250})
-ことになっているが, 今回インストールしたバージョンは LaTeX からでも一応動作するようだ. 
+ことになっているが, 今回インストールしたバージョンは LaTeX からでも一応動作するようだ.
 
 ただしいくつか問題がある. まず, \texttt{pandoc-crossref} の相互参照IDの命名にはルールがある. 図なら
 \texttt{fig:}, 表なら \texttt{tbl:}, セクションタイトルなら \texttt{sec:} と言うふうに接頭辞が必要だ.
@@ -461,14 +461,14 @@ pandocはデフォルトだと以下のような文中の別行立て数式を,
 
 \begin{table}
 \begin{tabular}{|c|c|c|}
-\hline 
+\hline
  & 1 & 2\tabularnewline
-\hline 
-\hline 
+\hline
+\hline
 a & x & o\tabularnewline
-\hline 
+\hline
 b & o & x\tabularnewline
-\hline 
+\hline
 \end{tabular}
 
 \caption{ここに表のキャプション\label{tab:tab-example}}
