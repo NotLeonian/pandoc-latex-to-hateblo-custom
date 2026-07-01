@@ -61,7 +61,7 @@
 # LaTeX, BibTeX, LyX
 *.tex   text diff=tex
 *.bib   text diff=bibtex
-*.lyx   text
+*.lyx   text whitespace=-blank-at-eol
 
 # Configuration and lock files
 *.ini   text

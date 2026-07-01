@@ -16,7 +16,7 @@
 % document 環境内で \label 使わないと LyX が使用判定してくれず, エラーになるので以下で必ず読み込み
 \usepackage{listings}
 \usepackage{color}
-\usepackage{prettyref}
+\usepackage{prettyref} 
 
 % 以下4パッケージは表のデザイン用
 \usepackage{dcolumn}
@@ -354,7 +354,7 @@ literal "false"
 \begin_layout Standard
 インストール方法がやや込み入っている.
  まずは pandoc を用意する.
- Ubuntu のレポジトリだとバージョンが少し古いので
+ Ubuntu のレポジトリだとバージョンが少し古いので 
 \begin_inset CommandInset href
 LatexCommand href
 name "github"
@@ -363,14 +363,14 @@ literal "false"
 
 \end_inset
 
- で
+ で 
 \family typewriter
 .deb
 \family default
  を落としてきてインストールする.
  関連パッケージとの対応を考慮して最新版より少し古い 2.9.2.1 を使用した.
  このへんバージョン制約が多いみたいなので注意.
- Pandoc 2.9.2.1 に対応する
+ Pandoc 2.9.2.1 に対応する 
 \family typewriter
 
 \begin_inset CommandInset href
@@ -384,7 +384,7 @@ literal "false"
 
 \family default
  の最新バージョンは 0.3.6.4 だが, これを少しだけいじったやつを使う.
-
+ 
 \family typewriter
 stack
 \family default
@@ -434,7 +434,7 @@ stack install
 \end_layout
 
 \begin_layout Standard
-さらに
+さらに 
 \begin_inset CommandInset href
 LatexCommand href
 name "pandoc-hateblo "
@@ -443,12 +443,12 @@ literal "false"
 
 \end_inset
 
- というのを作ってる人がいたのでフォークしてみたが「見出しを
+ というのを作ってる人がいたのでフォークしてみたが「見出しを 
 \family typewriter
 h3
 \family default
  タグに変える」という機能だけ作って数年前から止まっていいる.
- しかも私はまだ haskell がよく分かっていないので,
+ しかも私はまだ haskell がよく分かっていないので, 
 \begin_inset CommandInset href
 LatexCommand href
 name "フィルタに関する公式ガイド"
@@ -457,7 +457,7 @@ literal "false"
 
 \end_inset
 
-から辿って見つけた Python の
+から辿って見つけた Python の 
 \family typewriter
 
 \begin_inset CommandInset href
@@ -475,7 +475,7 @@ literal "false"
 status collapsed
 
 \begin_layout Plain Layout
-内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から
+内部的にはソースファイルを抽象構文木に変換, 抽象構文木にフィルタ適用, 抽象構文木から 
 \family typewriter
 –to
 \family default
@@ -488,7 +488,7 @@ status collapsed
 
 .
  その結果, オリジナルとは全く別物になった.
- なお pandoc を 2.9にしたのは
+ なお pandoc を 2.9にしたのは 
 \family typewriter
 panflute
 \family default
@@ -548,22 +548,22 @@ export PATH=<ここにpandoc-hateblo/binのパス>:${PATH} >> ~/.bashrc
 \end_layout
 
 \begin_layout Standard
-フォトライフのAPIキーを取得して, 設定ファイル
+フォトライフのAPIキーを取得して, 設定ファイル 
 \family typewriter
 settings.json
 \family default
  に書き込んでおく.
-
+ 
 \family typewriter
 blog_name
 \family default
  は人によっては違う形式になるはず.
-
+ 
 \family typewriter
 FOTO_FOLDER
 \family default
  は画像をアップロードしたいフォルダ.
- 未設定の場合は
+ 未設定の場合は 
 \family typewriter
 Hatena Blog
 \family default
@@ -598,7 +598,7 @@ status open
 
 \begin_layout Plain Layout
 
-
+  
 \begin_inset Quotes eld
 \end_inset
 
@@ -606,7 +606,7 @@ FOTO_FOLDER
 \begin_inset Quotes erd
 \end_inset
 
-:
+: 
 \begin_inset Quotes eld
 \end_inset
 
@@ -641,7 +641,7 @@ ZZZZ
 変換したいファイルのディレクトリに移動し
 \series default
  (フィルタの処理内でパスを参照するのがめんどくさくてやってないため) 以下のようなコマンドで変換する.
-
+ 
 \family typewriter
 [...]
 \family default
@@ -666,30 +666,30 @@ latex2hatena.sh [-o OUTPUT.html] [--bibliography=CITATIONS.bib] [--csl=CSL.csl]
 \end_layout
 
 \begin_layout Standard
-複数ある場合 (1) カレントディレクトリの
+複数ある場合 (1) カレントディレクトリの 
 \family typewriter
 settings.json
 \family default
-, (2)
+, (2) 
 \family typewriter
 hatena-filter/settings
 \family default
-
+ 
 \family typewriter
 /
 \family default
- の
+ の 
 \family typewriter
 settings.json
 \family default
 , (3) 環境変数.
  で優先される.
- また, 画像ファイルのアップロードをせず動作確認だけしたい場合は
+ また, 画像ファイルのアップロードをせず動作確認だけしたい場合は 
 \family typewriter
 -M enable-upload=false
 \family default
  という引数を追加する.
- また,
+ また, 
 \family typewriter
 -o ...
 
@@ -709,7 +709,7 @@ settings.json
  (はてなmarkdownではない) に対応したhtmlに変換したい.
  LyX は補完機能が充実しているので, 長いコマンドを短縮名のマクロで再定義するみたいなユーザー定義のマクロはあまり使わない, 使うとしてもコンテンツから分離
 したレイアウトの設定くらいにしか使わないという想定.
- 以下, 変換したいもの一覧 (参考:
+ 以下, 変換したいもの一覧 (参考: 
 \begin_inset CommandInset href
 LatexCommand href
 name "はてな記法一覧"
@@ -728,7 +728,7 @@ literal "false"
 \backslash
 hfref{}
 \family default
-は
+は 
 \family typewriter
 [url:title=文字列]
 \family default
@@ -737,7 +737,7 @@ hfref{}
 
 \begin_deeper
 \begin_layout Itemize
-ブログカード(? あれの呼び方がわからん) を埋め込みたい場合はとりあえずタイトルを
+ブログカード(? あれの呼び方がわからん) を埋め込みたい場合はとりあえずタイトルを 
 \begin_inset Quotes eld
 \end_inset
 
@@ -753,7 +753,7 @@ hfref{}
 \end_layout
 
 \begin_layout Itemize
-タイトルを自動取得したい場合も同様に
+タイトルを自動取得したい場合も同様に 
 \begin_inset Quotes eld
 \end_inset
 
@@ -780,7 +780,7 @@ hfref{}
 url{}
 \family default
 はそのままURLを表示する.
- 例:
+ 例: 
 \begin_inset Flex URL
 status collapsed
 
@@ -801,7 +801,7 @@ https://ill-identified.hatenablog.com/
 \end_deeper
 \begin_layout Itemize
 脚注もはてな記法に.
-
+ 
 \family typewriter
 (())
 \family default
@@ -809,7 +809,7 @@ https://ill-identified.hatenablog.com/
 \end_layout
 
 \begin_layout Itemize
-数式もはてな記法の
+数式もはてな記法の 
 \family typewriter
 [tex: ...]
 \family default
@@ -824,19 +824,19 @@ qiitaのようにいちいち変なエスケープをしなくて済むので簡
 
 \begin_layout Itemize
 いつからか別行立て数式が改行しなくなってしまったので別行立てで表示できるようにする.
-
+ 
 \end_layout
 
 \begin_layout Itemize
-タグを反映できるように
+タグを反映できるように 
 \family typewriter
 aligned
 \family default
- を全て
+ を全て 
 \family typewriter
 align
 \family default
- に置換
+ に置換 
 \end_layout
 
 \begin_layout Itemize
@@ -845,10 +845,10 @@ align
 
 \end_deeper
 \begin_layout Itemize
-引用ブロックは
+引用ブロックは 
 \family typewriter
 >> ...
- <<
+ << 
 \family default
 に変換した
 \end_layout
@@ -878,7 +878,7 @@ epligraph{}{}
 
 \end_deeper
 \begin_layout Itemize
-コードブロックはスーパーpre記法
+コードブロックはスーパーpre記法 
 \family typewriter
 (>|| ...
  ||<)
@@ -941,15 +941,15 @@ pandoc-crossref
 \end_layout
 
 \begin_layout Itemize
-しかし
+しかし 
 \family typewriter
 prettyref.sty
 \family default
- 前提で参照IDは
+ 前提で参照IDは 
 \family typewriter
 fig:
 \family default
- や
+ や 
 \family typewriter
 tab:
 \family default
@@ -1045,16 +1045,16 @@ https://pandoc.org/filters.html
 \end_inset
 
 .
- なお中間ファイルは json 形式でも表現できるので, 多くの言語では json 前提で書いたほうが楽かもしれないが, Python には
+ なお中間ファイルは json 形式でも表現できるので, 多くの言語では json 前提で書いたほうが楽かもしれないが, Python には 
 \family typewriter
 pandocfilters
 \family default
- と
+ と 
 \family typewriter
 panflute
 \family default
  という2種類のpandocフィルタ用モジュールがある.
- 今回は
+ 今回は 
 \family typewriter
 panflute
 \family default
@@ -1102,11 +1102,11 @@ status open
 \family typewriter
  <element_type>
 \family default
- が
+ が 
 \family typewriter
 Str
 \family default
- (文字列) とか
+ (文字列) とか 
 \family typewriter
 Link
 \family default
@@ -1141,7 +1141,7 @@ status open
 \begin_inset Quotes erd
 \end_inset
 
-,
+, 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1163,20 +1163,20 @@ status open
 \family typewriter
  panflute
 \family default
- では,
+ では, 
 \family typewriter
 <element>.identifier
 \family default
-,
+, 
 \family typewriter
 <element>.classes
 \family default
-,
+, 
 \family typewriter
 <element>.attributes
 \family default
  でアクセスできる.
- 属性は
+ 属性は 
 \family typewriter
 collections.OrderedDict
 \family default
@@ -1189,34 +1189,34 @@ Str
 \family typewriter
  <content>
 \family default
- には
+ には 
 \family typewriter
 <element>.content
 \family default
  でアクセスできる.
- この中には (1) ダブルクオーテーションで括った文字列, (2) 構文木の入れ子, (3) それらを
+ この中には (1) ダブルクオーテーションで括った文字列, (2) 構文木の入れ子, (3) それらを 
 \family typewriter
 [
 \family default
-,
+, 
 \family typewriter
 ]
 \family default
 で括ったリスト, のどれかを与えられる.
- 構文木入れ子の最上層の型は
+ 構文木入れ子の最上層の型は 
 \family typewriter
 Pandoc
 \family default
- であり,
+ であり, 
 \family typewriter
 <attributes>
 \family default
  にメタ情報が入っている.
- ただし
+ ただし 
 \family typewriter
 panflute
 \family default
- ではこれは他のタグとは違う特別扱いで,
+ ではこれは他のタグとは違う特別扱いで, 
 \family typewriter
 doc.get_metadata()
 \family default
@@ -1246,15 +1246,15 @@ pandoc --mathjax -f latex -t native -o blog/intermediate.ast -F ./hateblo-filter
 
 \end_inset
 
-
+ 
 \end_layout
 
 \begin_layout Standard
-また, Python 内で
+また, Python 内で 
 \family typewriter
 panflute.convert_text()
 \family default
- を使うと各フォーマットのテキストや
+ を使うと各フォーマットのテキストや 
 \family typewriter
 panflute
 \family default
@@ -1262,7 +1262,7 @@ panflute
 \end_layout
 
 \begin_layout Standard
-要素単位の変換処理は
+要素単位の変換処理は 
 \family typewriter
 panflute
 \family default
@@ -1274,17 +1274,17 @@ panflute
 status collapsed
 
 \begin_layout Plain Layout
-加えて, 相互参照として認識されるのは
+加えて, 相互参照として認識されるのは 
 \family typewriter
 
 \backslash
 ref{...}
 \family default
- コマンドのみで
+ コマンドのみで 
 \family typewriter
 prettyref.sty
 \family default
- や
+ や 
 \family typewriter
 refstyle.sty
 \family default
@@ -1294,11 +1294,11 @@ refstyle.sty
 \end_inset
 
 .
- また, 文献引用も
+ また, 文献引用も 
 \family typewriter
 –bibliography=
 \family default
- にファイルを指定すれば自動で
+ にファイルを指定すれば自動で 
 \family typewriter
 pandoc-citeproc
 \family default
@@ -1306,7 +1306,7 @@ pandoc-citeproc
 \end_layout
 
 \begin_layout Standard
-これに対して
+これに対して 
 \family typewriter
 
 \begin_inset CommandInset href
@@ -1329,12 +1329,12 @@ status open
 \family typewriter
  link-citations=true
 \family default
- と
+ と 
 \family typewriter
 linkReferences=true
 \family default
  をメタデータに追加することで切り替えられる.
- しかしなんでハイフンだったりキャメルだったりするのか? また, デフォルトでは
+ しかしなんでハイフンだったりキャメルだったりするのか? また, デフォルトでは 
 \family typewriter
 false
 \family default
@@ -1344,7 +1344,7 @@ false
 \end_inset
 
 .
- このフィルタは基本的に Markdown から他の媒体への変換を想定しており, LaTeX からの変換は想定していない (issue
+ このフィルタは基本的に Markdown から他の媒体への変換を想定しており, LaTeX からの変換は想定していない (issue 
 \begin_inset CommandInset href
 LatexCommand href
 name "#250"
@@ -1354,39 +1354,39 @@ literal "false"
 \end_inset
 
 ) ことになっているが, 今回インストールしたバージョンは LaTeX からでも一応動作するようだ.
-
+ 
 \end_layout
 
 \begin_layout Standard
 ただしいくつか問題がある.
- まず,
+ まず, 
 \family typewriter
 pandoc-crossref
 \family default
  の相互参照IDの命名にはルールがある.
- 図なら
+ 図なら 
 \family typewriter
 fig:
 \family default
-, 表なら
+, 表なら 
 \family typewriter
 tbl:
 \family default
-, セクションタイトルなら
+, セクションタイトルなら 
 \family typewriter
 sec:
 \family default
  と言うふうに接頭辞が必要だ.
- これは私が LyX で使っている
+ これは私が LyX で使っている 
 \family typewriter
 prettyref.sty
 \family default
  でも似たルールで採用されている.
- しかし, こちらでは表は
+ しかし, こちらでは表は 
 \family typewriter
 tab:
 \family default
- であり,
+ であり, 
 \family typewriter
 pandoc-crossref
 \family default
@@ -1402,7 +1402,7 @@ https://github.com/lierdakil/pandoc-crossref/issues/200
 
 \end_inset
 
-が, 今はpandoc,
+が, 今はpandoc, 
 \family typewriter
 panflute
 \family default
@@ -1415,7 +1415,7 @@ panflute
  全くスマートではないがまだ haskell がわからないので一旦これでやっていく.
  これがオリジナルではなくフォークリポジトリを用意した理由である.
  もう1つは LaTeX からの変換の場合, 参照IDが表示されてしまう点.
- これは
+ これは 
 \family typewriter
 panflute
 \family default
@@ -1423,7 +1423,7 @@ panflute
 \end_layout
 
 \begin_layout Standard
-それ以外の置き換えはさほど難しい話ではなく,
+それ以外の置き換えはさほど難しい話ではなく, 
 \family typewriter
 panflute
 \family default
@@ -1479,11 +1479,11 @@ proc -F hateblo-filter.py -MfigureTitle='図' -MfigPrefix='図' -MtableTitle='�
 
 \begin_layout Standard
 はてな記法のリンクはリンク先のタイトルを取得できたり埋め込みできたりと便利である.
- たとえば
+ たとえば 
 \family typewriter
 [https://hogehoge:title
 \family default
-
+ 
 \family typewriter
 ]
 \family default
@@ -1497,7 +1497,7 @@ literal "false"
 \end_inset
 
 』のようにタイトルを自動取得できる.
-
+ 
 \family typewriter
 :embed:
 \family default
@@ -1518,7 +1518,7 @@ literal "false"
 
 \begin_layout Standard
 pandocはデフォルトだと以下のような文中の別行立て数式を,
-\begin_inset Formula
+\begin_inset Formula 
 \begin{align}
 \sin^{2}x+\cos^{2}x= & 1,\tag{A}\label{eq:sincos}\\
 \int_{\mathbb{R}}xdF(x;\theta)= & \mu\tag{B}\label{eq:integral}
@@ -1541,16 +1541,16 @@ status collapsed
 \end_inset
 
 .
- また, mathjax を指定すると数式を
+ また, mathjax を指定すると数式を 
 \family typewriter
 
 \backslash
 [ ...
-
+ 
 \backslash
 ]
 \family default
- で囲むが, はてな記法
+ で囲むが, はてな記法 
 \family typewriter
 [tex: ...
  ]
@@ -1559,15 +1559,15 @@ status collapsed
 \end_layout
 
 \begin_layout Standard
-引用ブロックもはてな記法が便利なので,
+引用ブロックもはてな記法が便利なので, 
 \family typewriter
 quote
 \family default
-,
+, 
 \family typewriter
 quotation
 \family default
-,
+, 
 \family typewriter
 epigraph
 \family default
@@ -1576,7 +1576,7 @@ epigraph
 status collapsed
 
 \begin_layout Plain Layout
-ただし, はてな記法の引用ブロックの出典にはURLを指定することしかできないため,
+ただし, はてな記法の引用ブロックの出典にはURLを指定することしかできないため, 
 \backslash
 LaTeX との互換性は完全ではない.
 \end_layout
@@ -1641,7 +1641,7 @@ status open
 
 \begin_layout Standard
 図表のキャプションと相互参照.
- 図
+ 図 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:tiger"
@@ -1651,7 +1651,7 @@ noprefix "false"
 
 \end_inset
 
-, 表
+, 表 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:tab-example"
@@ -1838,7 +1838,7 @@ name "fig:tiger"
 
 \begin_layout Standard
 数式参照も可能.
-
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:sincos"
@@ -1848,7 +1848,7 @@ noprefix "false"
 
 \end_inset
 
-,
+, 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:integral"
@@ -1863,7 +1863,7 @@ noprefix "false"
 
 \begin_layout Standard
 文献引用にも対応.
- これらの本を表示例に選んだ理由は特にない:
+ これらの本を表示例に選んだ理由は特にない: 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Hoshino2009"
@@ -1871,7 +1871,7 @@ literal "false"
 
 \end_inset
 
-,
+, 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "yamamoto2019"
@@ -1879,7 +1879,7 @@ literal "false"
 
 \end_inset
 
-,
+, 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "HastieTibshrianiFriedman2009"
@@ -1887,7 +1887,7 @@ literal "false"
 
 \end_inset
 
-,
+, 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "igami2017Estimating"
@@ -1904,16 +1904,16 @@ literal "false"
 
 \begin_layout Itemize
 目次の配置は自動化していない.
- pandoc の
+ pandoc の 
 \family typewriter
 -–toc
 \family default
- オプションは
+ オプションは 
 \family typewriter
 -s
 \family default
  と併用しない限り意味がない.
- しかし
+ しかし 
 \family typewriter
 -s
 \family default
@@ -1921,7 +1921,7 @@ literal "false"
 \end_layout
 
 \begin_layout Itemize
-数式参照には数式側に
+数式参照には数式側に 
 \family typewriter
 
 \backslash
@@ -1940,27 +1940,27 @@ prettyref
 refstyle
 \family default
  への対応.
- 相互参照のときに参照IDだけ書けば十分なはずだが,
+ 相互参照のときに参照IDだけ書けば十分なはずだが, 
 \family typewriter
 
 \backslash
 ref{}
 \family default
  では「図」とか「表」とか接頭辞も毎回いちいち書く必要がある.
- これはナンセンスなので私は LyX 上では
+ これはナンセンスなので私は LyX 上では 
 \family typewriter
 prettyref.sty
 \family default
- の書式設定で対処している(LyX 開発者側は類似機能を持つ
+ の書式設定で対処している(LyX 開発者側は類似機能を持つ 
 \family typewriter
 refstyle.sty
 \family default
  に移行したがっているが私は未対応).
- しかし今回はまだ pandoc は
+ しかし今回はまだ pandoc は 
 \family typewriter
 prettyref.sty
 \family default
- の
+ の 
 \family typewriter
 
 \backslash
@@ -1977,7 +1977,7 @@ prettyref{}
 \begin_layout Itemize
 参考文献リストのフォーマット.
  CSLファイルか BibLaTeX のフォーマットを書く必要がある.
- CSL は XML で書くので比較的簡単だが, 仕様上, 私が LaTeX でいつも使っている
+ CSL は XML で書くので比較的簡単だが, 仕様上, 私が LaTeX でいつも使っている 
 \family typewriter
 
 \begin_inset CommandInset href
