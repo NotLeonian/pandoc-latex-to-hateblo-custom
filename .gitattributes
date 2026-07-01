@@ -51,3 +51,29 @@
 *.pyc   binary
 *.pyo   binary
 *.pyd   binary
+
+# Shell
+*.sh    text diff=bash
+
+# HTML
+*.html  text diff=html
+
+# LaTeX, BibTeX, LyX
+*.tex   text diff=tex
+*.bib   text diff=bibtex
+*.lyx   text
+
+# Configuration and lock files
+*.ini   text
+*.toml  text
+*.lock  text
+
+# License text
+*.MIT   text
+
+# Vendored files
+_vendor/** linguist-vendored -text -eol
+
+# Generated files
+example/*.html linguist-generated -text -eol whitespace=-blank-at-eol
+example/**/*.html linguist-generated -text -eol whitespace=-blank-at-eol
