@@ -10,7 +10,7 @@ import random
 import re
 import sys
 import warnings
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -54,17 +54,12 @@ class hatena_token:
             hatena_user = self.hatena_user
         if not foto_api_key:
             foto_api_key = self.foto_api_key
-        created_at = datetime.now().isoformat() + "Z"
+        created_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         b_nonce = hashlib.sha1(str(random.random()).encode()).digest()
         b_digest = hashlib.sha1(
             b_nonce + created_at.encode() + foto_api_key.encode()
         ).digest()
-        return "UsernameToken Username=\"{}\", PasswordDigest=\"{}\", Nonce=\"{}\", Created=\"{}\"".format(
-            hatena_user,
-            base64.b64encode(b_digest).decode(),
-            base64.b64encode(b_nonce).decode(),
-            created_at,
-        )
+        return f"UsernameToken Username=\"{hatena_user}\", PasswordDigest=\"{base64.b64encode(b_digest).decode()}\", Nonce=\"{base64.b64encode(b_nonce).decode()}\", Created=\"{created_at}\""
 
     def _create_image_xml(self, file_name_path, title="", to_folder=None):
         if not to_folder:
@@ -150,9 +145,12 @@ def filter_hatena_toc(elem, doc):
     """
     目次を挿入する場合ははてな記法で自動生成するように置き換え
     """
-    if isinstance(elem, pf.RawBlock):
-        if elem.format == "latex" and elem.text == r"\tableofcontents{}":
-            return pf.Plain(pf.RawInline("[:contents]"))
+    if (
+        isinstance(elem, pf.RawBlock)
+        and elem.format == "latex"
+        and elem.text == r"\tableofcontents{}"
+    ):
+        return pf.Plain(pf.RawInline("[:contents]"))
 
 
 def filter_hatena_header_level(elem, doc):
@@ -167,30 +165,29 @@ def filter_hatena_link(elem, doc):
     """
     ハイパーリンクをはてな記法に置き換え
     """
-    if isinstance(elem, pf.Link):
-        if elem.url[0] != "#":
-            url_title = pf.stringify(elem).strip()
-            if url_title == ":embed:":
-                return pf.RawInline("[{}:embed:cite]".format(elem.url))
-            if url_title == ":title:":
-                return pf.RawInline("[{}:title]".format(elem.url))
+    if isinstance(elem, pf.Link) and elem.url[0] != "#":
+        url_title = pf.stringify(elem).strip()
+        if url_title == ":embed:":
+            return pf.RawInline(f"[{elem.url}:embed:cite]")
+        if url_title == ":title:":
+            return pf.RawInline(f"[{elem.url}:title]")
+        else:
+            if url_title == "":
+                url_title = elem.url
+                hatena_str = f"[{elem.url}]"
             else:
-                if url_title == "":
-                    url_title = elem.url
-                    hatena_str = "[{}]".format(elem.url)
-                else:
-                    hatena_str = "[{0}:title={1}]".format(elem.url, url_title)
-                result_str = ""
-                if isinstance(elem.prev, pf.Str) and len(elem.prev.text):
-                    test = elem.prev.text[-1] + url_title[0]
-                    if test != spacing(test):
-                        result_str += " "
-                result_str += hatena_str
-                if isinstance(elem.next, pf.Str) and len(elem.next.text):
-                    test = url_title[-1] + elem.next.text[0]
-                    if test != spacing(test):
-                        result_str += " "
-                return pf.RawInline(result_str)
+                hatena_str = f"[{elem.url}:title={url_title}]"
+            result_str = ""
+            if isinstance(elem.prev, pf.Str) and len(elem.prev.text):
+                test = elem.prev.text[-1] + url_title[0]
+                if test != spacing(test):
+                    result_str += " "
+            result_str += hatena_str
+            if isinstance(elem.next, pf.Str) and len(elem.next.text):
+                test = url_title[-1] + elem.next.text[0]
+                if test != spacing(test):
+                    result_str += " "
+            return pf.RawInline(result_str)
 
 
 def filter_hatena_footnote(elem, doc):
@@ -219,9 +216,9 @@ def filter_hatena_katex(elem, doc):
         math_expr = re.sub(">", r"\\gt ", math_expr)
         math_expr = re.sub(r"\s+", " ", math_expr)
         if is_displaymath:
-            return "\\[{}\\]".format(math_expr)
+            return f"\\[{math_expr}\\]"
         else:
-            return "\\({}\\)".format(math_expr)
+            return f"\\({math_expr}\\)"
 
     if isinstance(elem, pf.Math):
         if elem.format == "InlineMath":
