@@ -59,12 +59,7 @@ class hatena_token:
         b_digest = hashlib.sha1(
             b_nonce + created_at.encode() + foto_api_key.encode()
         ).digest()
-        return "UsernameToken Username=\"{}\", PasswordDigest=\"{}\", Nonce=\"{}\", Created=\"{}\"".format(
-            hatena_user,
-            base64.b64encode(b_digest).decode(),
-            base64.b64encode(b_nonce).decode(),
-            created_at,
-        )
+        return f"UsernameToken Username=\"{hatena_user}\", PasswordDigest=\"{base64.b64encode(b_digest).decode()}\", Nonce=\"{base64.b64encode(b_nonce).decode()}\", Created=\"{created_at}\""
 
     def _create_image_xml(self, file_name_path, title="", to_folder=None):
         if not to_folder:
@@ -171,15 +166,15 @@ def filter_hatena_link(elem, doc):
         if elem.url[0] != "#":
             url_title = pf.stringify(elem).strip()
             if url_title == ":embed:":
-                return pf.RawInline("[{}:embed:cite]".format(elem.url))
+                return pf.RawInline(f"[{elem.url}:embed:cite]")
             if url_title == ":title:":
-                return pf.RawInline("[{}:title]".format(elem.url))
+                return pf.RawInline(f"[{elem.url}:title]")
             else:
                 if url_title == "":
                     url_title = elem.url
-                    hatena_str = "[{}]".format(elem.url)
+                    hatena_str = f"[{elem.url}]"
                 else:
-                    hatena_str = "[{0}:title={1}]".format(elem.url, url_title)
+                    hatena_str = f"[{elem.url}:title={url_title}]"
                 result_str = ""
                 if isinstance(elem.prev, pf.Str) and len(elem.prev.text):
                     test = elem.prev.text[-1] + url_title[0]
@@ -219,9 +214,9 @@ def filter_hatena_katex(elem, doc):
         math_expr = re.sub(">", r"\\gt ", math_expr)
         math_expr = re.sub(r"\s+", " ", math_expr)
         if is_displaymath:
-            return "\\[{}\\]".format(math_expr)
+            return f"\\[{math_expr}\\]"
         else:
-            return "\\({}\\)".format(math_expr)
+            return f"\\({math_expr}\\)"
 
     if isinstance(elem, pf.Math):
         if elem.format == "InlineMath":
