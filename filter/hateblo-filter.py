@@ -10,7 +10,7 @@ import random
 import re
 import sys
 import warnings
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -54,7 +54,7 @@ class hatena_token:
             hatena_user = self.hatena_user
         if not foto_api_key:
             foto_api_key = self.foto_api_key
-        created_at = datetime.now().isoformat() + "Z"
+        created_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         b_nonce = hashlib.sha1(str(random.random()).encode()).digest()
         b_digest = hashlib.sha1(
             b_nonce + created_at.encode() + foto_api_key.encode()
@@ -145,9 +145,12 @@ def filter_hatena_toc(elem, doc):
     """
     目次を挿入する場合ははてな記法で自動生成するように置き換え
     """
-    if isinstance(elem, pf.RawBlock):
-        if elem.format == "latex" and elem.text == r"\tableofcontents{}":
-            return pf.Plain(pf.RawInline("[:contents]"))
+    if (
+        isinstance(elem, pf.RawBlock)
+        and elem.format == "latex"
+        and elem.text == r"\tableofcontents{}"
+    ):
+        return pf.Plain(pf.RawInline("[:contents]"))
 
 
 def filter_hatena_header_level(elem, doc):
