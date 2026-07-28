@@ -162,30 +162,29 @@ def filter_hatena_link(elem, doc):
     """
     ハイパーリンクをはてな記法に置き換え
     """
-    if isinstance(elem, pf.Link):
-        if elem.url[0] != "#":
-            url_title = pf.stringify(elem).strip()
-            if url_title == ":embed:":
-                return pf.RawInline(f"[{elem.url}:embed:cite]")
-            if url_title == ":title:":
-                return pf.RawInline(f"[{elem.url}:title]")
+    if isinstance(elem, pf.Link) and elem.url[0] != "#":
+        url_title = pf.stringify(elem).strip()
+        if url_title == ":embed:":
+            return pf.RawInline(f"[{elem.url}:embed:cite]")
+        if url_title == ":title:":
+            return pf.RawInline(f"[{elem.url}:title]")
+        else:
+            if url_title == "":
+                url_title = elem.url
+                hatena_str = f"[{elem.url}]"
             else:
-                if url_title == "":
-                    url_title = elem.url
-                    hatena_str = f"[{elem.url}]"
-                else:
-                    hatena_str = f"[{elem.url}:title={url_title}]"
-                result_str = ""
-                if isinstance(elem.prev, pf.Str) and len(elem.prev.text):
-                    test = elem.prev.text[-1] + url_title[0]
-                    if test != spacing(test):
-                        result_str += " "
-                result_str += hatena_str
-                if isinstance(elem.next, pf.Str) and len(elem.next.text):
-                    test = url_title[-1] + elem.next.text[0]
-                    if test != spacing(test):
-                        result_str += " "
-                return pf.RawInline(result_str)
+                hatena_str = f"[{elem.url}:title={url_title}]"
+            result_str = ""
+            if isinstance(elem.prev, pf.Str) and len(elem.prev.text):
+                test = elem.prev.text[-1] + url_title[0]
+                if test != spacing(test):
+                    result_str += " "
+            result_str += hatena_str
+            if isinstance(elem.next, pf.Str) and len(elem.next.text):
+                test = url_title[-1] + elem.next.text[0]
+                if test != spacing(test):
+                    result_str += " "
+            return pf.RawInline(result_str)
 
 
 def filter_hatena_footnote(elem, doc):
