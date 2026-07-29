@@ -41,8 +41,9 @@ quote-style = "preserve"
 extend-select = ["I"]
 
 [[tool.mypy.overrides]]
-module = [
-    "panflute",
-    "pangu",
-]
+module = "panflute"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "_vendor.*"
+follow_imports = "skip"
