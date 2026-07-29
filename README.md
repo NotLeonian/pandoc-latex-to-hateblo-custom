@@ -14,3 +14,14 @@ upstream からは以下のような変更を行っている.
 - 英数字と CJK 文字の間にスペースが入るように変更.
 
 また, upstream の `README.md` も参照するとよい.
+
+## Python checks
+
+Python ソースコードのフォーマットと静的検査には以下のコマンドを使用する.
+
+```sh
+uv run ruff format .
+uv run ruff check .
+uv run pyright
+uv run mypy .
+```
