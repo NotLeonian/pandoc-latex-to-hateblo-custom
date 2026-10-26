@@ -341,16 +341,16 @@ def filter_hatena_image(elem, doc):
         else:
             image_file_id = "INSERT_FILE_ID_HERE"
         ref_ids_img = [
-            x.identifier
+            getattr(x, "identifier", "")
             for x in elem.content
-            if hasattr(x, "identifier") and x.identifier[:4] == "fig:"
+            if getattr(x, "identifier", "").startswith("fig:")
         ]
         if len(ref_ids_img) > 0:  # TODO: 複数ID存在するケースってあるの
             caption_inlines = [x for x in elem.content if isinstance(x, pf.Inline)]
             caption_inlines = [
                 x
                 for x in caption_inlines
-                if not (hasattr(x, "attributes") and x.attributes.get("label"))
+                if not getattr(x, "attributes", {}).get("label")
             ]
             caption_plain = str(pf.stringify(pf.Span(*caption_inlines)))
             return (
@@ -376,9 +376,9 @@ def filter_table_remove_tag(elem, doc):
     """
     if isinstance(elem, pf.Table):
         ref_ids_tab = [
-            x.identifier
+            getattr(x, "identifier", "")
             for x in elem.caption.content
-            if hasattr(x, "identifier") and x.identifier[:4] == "tab:"
+            if getattr(x, "identifier", "").startswith("tab:")
         ]
         if len(ref_ids_tab) > 0:
             tab_caption_inlines = [
@@ -387,9 +387,9 @@ def filter_table_remove_tag(elem, doc):
             tab_caption_inlines = [
                 x
                 for x in tab_caption_inlines
-                if not (hasattr(x, "attributes") and x.attributes.get("label"))
+                if not getattr(x, "attributes", {}).get("label")
             ]
-            elem.caption = tab_caption_inlines
+            elem.caption = pf.Caption(pf.Plain(*tab_caption_inlines))
             return elem
 
 

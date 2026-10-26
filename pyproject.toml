@@ -18,6 +18,7 @@ dev = [
 
 [tool.mypy]
 exclude = '(^|/)_vendor/'
+mypy_path = "$MYPY_CONFIG_FILE_DIR/typings"
 python_version = "3.13"
 
 [tool.pyright]
@@ -29,6 +30,7 @@ exclude = [
     "**/.*",
 ]
 pythonVersion = "3.13"
+stubPath = "typings"
 
 [tool.ruff]
 extend-exclude = ["_vendor"]
@@ -38,10 +40,6 @@ quote-style = "preserve"
 
 [tool.ruff.lint]
 extend-select = ["I"]
-
-[[tool.mypy.overrides]]
-module = "panflute"
-ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "_vendor.*"
