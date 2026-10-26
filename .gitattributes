@@ -58,6 +58,10 @@
 # HTML
 *.html  text diff=html
 
+# YAML
+*.yml   text
+*.yaml  text
+
 # LaTeX, BibTeX, LyX
 *.tex   text diff=tex
 *.bib   text diff=bibtex
