@@ -32,6 +32,10 @@ insert_final_newline = unset
 [*.sh]
 indent_size = 2
 
+# YAML
+[*.{yml,yaml}]
+indent_size = 2
+
 # LaTeX, BibTeX
 [*.{tex,bib}]
 indent_size = 2
